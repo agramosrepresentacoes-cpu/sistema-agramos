@@ -699,6 +699,13 @@ const fbAuth = firebase.auth();
 const fbDb = firebase.firestore();
 const fbStorage = firebase.storage();
 
+/* Correção para erro "client is offline": alguns antivírus, firewalls
+   corporativos e certas redes/ISPs bloqueiam a conexão de streaming
+   (WebChannel) que o Firestore usa por padrão. Isso força o SDK a
+   detectar automaticamente esse bloqueio e usar "long polling" no
+   lugar, que atravessa praticamente qualquer rede. */
+fbDb.settings({ experimentalAutoDetectLongPolling: true, merge: true });
+
 /* Lista de e-mails autorizados a acessar o CRM como colaborador.
    Edite esta lista (ou, melhor, gerencie pela coleção "colaboradores"
    no Firestore — veja abaixo) sempre que contratar/desligar alguém.
