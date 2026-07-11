@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal do Produtor</title>
+<style>
+:root{
+  --g1:#1a3a2a;--g2:#2d6a4f;--g3:#52b788;--g4:#d8f3dc;
+  --terra:#a0522d;--terra2:#f4e0d0;--am:#f4a261;
+  --az:#457b9d;--az2:#dce8f0;--bg:#f4f6f0;
+  --bd:#d0d8c8;--txt:#2a2a2a;--w:#fff;
+  --verm:#e63946;--verm2:#fde8ea;
+  --f:'Segoe UI',system-ui,sans-serif;
+  --sh:0 1px 4px rgba(0,0,0,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--f);background:var(--bg);color:var(--txt);font-size:14px}
+input,select,textarea,button{font-family:var(--f)}
+
+#screen-login{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,var(--g1) 0%,var(--g2) 55%,#40916c 100%)}
+.lbox{background:white;border-radius:16px;padding:40px 36px;width:390px;max-width:92vw;box-shadow:0 24px 64px rgba(0,0,0,.32)}
+.llogo{text-align:center;margin-bottom:28px}
+.llogo h1{font-size:24px;font-weight:800;color:var(--g1)}
+.llogo h1 span{color:var(--g3)}
+.llogo p{color:#7a8a70;font-size:13px;margin-top:4px}
+.lerr{background:var(--verm2);color:var(--verm);border-radius:6px;padding:10px 12px;font-size:13px;margin-bottom:12px;display:none}
+.lsep{margin:18px 0;border:none;border-top:1px solid var(--bd)}
+.ltoggle{text-align:center;font-size:12.5px;color:var(--g2);cursor:pointer;margin-top:14px;font-weight:600}
+
+#screen-app{display:none}
+.hdr{background:var(--g1);color:white;padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.hlogo{font-size:18px;font-weight:800;letter-spacing:-.5px}
+.hlogo span{color:var(--g3)}
+.hright{display:flex;align-items:center;gap:10px;font-size:13px}
+.hubadge{background:rgba(255,255,255,.12);padding:4px 12px;border-radius:20px}
+.main{max-width:900px;margin:0 auto;padding:22px}
+
+.ptit{font-size:20px;font-weight:700;color:var(--g1);margin-bottom:3px}
+.psub{color:#6b7c6a;font-size:13px;margin-bottom:18px}
+
+.sec{background:white;border-radius:10px;padding:18px;margin-bottom:16px;box-shadow:var(--sh)}
+.stit{font-size:13px;font-weight:700;color:var(--g1);margin-bottom:12px;padding-bottom:9px;border-bottom:1px solid var(--bd)}
+
+.btn{padding:9px 16px;border-radius:6px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px;line-height:1.3}
+.bg{background:var(--g2);color:white}.bg:hover{background:var(--g1)}
+.bo{background:white;color:var(--g2);border:1.5px solid var(--g2)}.bo:hover{background:var(--g4)}
+.bv{background:var(--verm);color:white}
+.bfull{width:100%;justify-content:center;padding:11px}
+.bgrp{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+
+.tabs{display:flex;gap:1px;margin-bottom:16px;border-bottom:2px solid var(--bd);flex-wrap:wrap}
+.tab{padding:8px 14px;cursor:pointer;font-size:13px;font-weight:600;color:#6b7c6a;border-bottom:2px solid transparent;margin-bottom:-2px}
+.tab.on{color:var(--g2);border-bottom-color:var(--g2)}
+.tc{display:none}.tc.on{display:block}
+
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:11px}
+.fg{display:flex;flex-direction:column;gap:3px}
+.fg label{font-size:11px;font-weight:600;color:#4a6a54;text-transform:uppercase;letter-spacing:.4px}
+.fg input,.fg select,.fg textarea{padding:9px 10px;border:1.5px solid var(--bd);border-radius:6px;font-size:13px;background:white;color:var(--txt)}
+.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--g3);box-shadow:0 0 0 3px rgba(82,183,136,.12)}
+.fg textarea{resize:vertical;min-height:60px}
+.fc{grid-column:1/-1}
+
+.ibox{border:2px dashed var(--bd);border-radius:10px;padding:26px;text-align:center;cursor:pointer;transition:all .15s;background:#fafcf9}
+.ibox:hover{border-color:var(--g3);background:var(--g4)}
+.ibox .iico{font-size:32px;margin-bottom:8px}
+.ibox p{font-size:12.5px;color:#6b7c6a}
+
+.flist{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+.fitem{display:flex;align-items:center;gap:10px;background:#f6f8f4;border-radius:6px;padding:8px 10px;font-size:12.5px}
+.fitem img{width:34px;height:34px;object-fit:cover;border-radius:4px;flex-shrink:0}
+.fitem .fico{width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:var(--g4);border-radius:4px;font-size:16px;flex-shrink:0}
+.fitem .fname{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fitem .frm{color:var(--verm);cursor:pointer;font-weight:700;padding:0 4px}
+.pbar-wrap{height:5px;background:var(--bd);border-radius:3px;margin-top:5px;overflow:hidden;display:none}
+.pbar-fill{height:100%;background:var(--g3);width:0%;transition:width .2s}
+
+.bdg{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.by{background:#fef3cd;color:#b07a00}.bg2{background:var(--g4);color:var(--g2)}.br{background:var(--verm2);color:var(--verm)}
+
+.mlist{display:flex;flex-direction:column;gap:10px}
+.mitem{background:white;border-radius:8px;padding:12px 14px;box-shadow:var(--sh);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.mitem .mtxt strong{display:block;font-size:13.5px;color:var(--g1)}
+.mitem .mtxt span{font-size:12px;color:#6b7c6a}
+
+.narea{position:fixed;bottom:20px;right:20px;z-index:999;display:flex;flex-direction:column;gap:8px}
+.notif{background:var(--g1);color:white;padding:12px 18px;border-radius:8px;font-size:13px;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,.25);max-width:320px}
+.notif.err{background:var(--verm)}.notif.ok{background:var(--g2)}
+
+.step-nav{display:flex;justify-content:space-between;margin-top:6px}
+.hint{font-size:12px;color:#8a978a;margin-top:8px}
+
+@media(max-width:600px){.main{padding:14px}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN / CADASTRO -->
+<div id="screen-login">
+  <div class="lbox">
+    <div class="llogo">
+      <h1>🌾 Portal do <span>Produtor</span></h1>
+      <p>Envie seus dados e documentos para análise de crédito</p>
+    </div>
+    <div class="lerr" id="lerr"></div>
+
+    <div id="bloco-login">
+      <div class="fg" style="margin-bottom:10px"><label>E-mail</label><input type="email" id="l-email"></div>
+      <div class="fg" style="margin-bottom:16px"><label>Senha</label><input type="password" id="l-senha"></div>
+      <button class="btn bg bfull" id="btn-login" onclick="doLogin()">Entrar</button>
+      <p class="ltoggle" onclick="toggleModo('cad')">Ainda não tenho conta — Criar cadastro</p>
+    </div>
+
+    <div id="bloco-cad" style="display:none">
+      <div class="fg" style="margin-bottom:10px"><label>Nome completo</label><input id="r-nome"></div>
+      <div class="fg" style="margin-bottom:10px"><label>E-mail</label><input type="email" id="r-email"></div>
+      <div class="fg" style="margin-bottom:16px"><label>Senha (mín. 6 caracteres)</label><input type="password" id="r-senha"></div>
+      <button class="btn bg bfull" id="btn-cad" onclick="doRegister()">Criar minha conta</button>
+      <p class="ltoggle" onclick="toggleModo('login')">Já tenho conta — Entrar</p>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="screen-app">
+  <header class="hdr">
+    <div class="hlogo">🌾 Portal do <span>Produtor</span></div>
+    <div class="hright">
+      <span class="hubadge" id="hd-user"></span>
+      <button class="btn bo bsm" onclick="doLogout()" style="color:white;border-color:rgba(255,255,255,.5)">Sair</button>
+    </div>
+  </header>
+
+  <div class="main">
+    <div class="ptit">Nova solicitação de análise de crédito</div>
+    <div class="psub">Preencha seus dados, anexe fotos e documentos, e envie para nossa equipe.</div>
+
+    <div class="sec">
+      <div class="tabs">
+        <div class="tab on" data-tc="t-pes" onclick="switchTab(this)">👤 Pessoal</div>
+        <div class="tab" data-tc="t-prop" onclick="switchTab(this)">🌾 Propriedade</div>
+        <div class="tab" data-tc="t-cred" onclick="switchTab(this)">💰 Crédito</div>
+        <div class="tab" data-tc="t-doc" onclick="switchTab(this)">📎 Fotos e Documentos</div>
+      </div>
+
+      <div class="tc on" id="t-pes">
+        <div class="fgrid">
+          <div class="fg fc"><label>Nome completo / Razão social *</label><input id="f-nome"></div>
+          <div class="fg"><label>CPF / CNPJ *</label><input id="f-cpf" placeholder="000.000.000-00"></div>
+          <div class="fg"><label>Data de nascimento</label><input type="date" id="f-nasc"></div>
+          <div class="fg"><label>Telefone</label><input id="f-tel" placeholder="(65) 99999-0000"></div>
+          <div class="fg"><label>WhatsApp</label><input id="f-whats" placeholder="(65) 99999-0000"></div>
+        </div>
+      </div>
+
+      <div class="tc" id="t-prop">
+        <div class="fgrid">
+          <div class="fg"><label>Nome da fazenda</label><input id="f-fazenda"></div>
+          <div class="fg"><label>Município</label><input id="f-mun"></div>
+          <div class="fg"><label>UF</label>
+            <select id="f-uf"><option>MT</option><option>MS</option><option>GO</option><option>PR</option><option>SP</option><option>MG</option><option>BA</option><option>PA</option><option>TO</option><option>RO</option><option>AC</option></select>
+          </div>
+          <div class="fg"><label>Área (hectares)</label><input type="number" id="f-ha"></div>
+          <div class="fg"><label>Cultura principal</label>
+            <select id="f-cult"><option>Soja</option><option>Milho</option><option>Algodão</option><option>Boi / Pastagem</option><option>Cana-de-açúcar</option><option>Café</option><option>Feijão</option><option>Arroz</option><option>Outro</option></select>
+          </div>
+          <div class="fg"><label>Número do CAR (se já tiver)</label><input id="f-ncar" placeholder="MT-1234567-XXXXX"></div>
+        </div>
+      </div>
+
+      <div class="tc" id="t-cred">
+        <div class="fgrid">
+          <div class="fg"><label>Banco de preferência</label>
+            <select id="f-banco"><option value="">Sem preferência</option><option>Banco do Brasil</option><option>SICREDI</option><option>Caixa Econômica</option><option>BDMG</option><option>BRB</option><option>Bradesco</option><option>Itaú</option><option>BNB</option><option>BASA</option><option>Outro</option></select>
+          </div>
+          <div class="fg"><label>Linha de crédito desejada</label>
+            <select id="f-linha"><option value="">—</option><option>Pronaf</option><option>Pronamp</option><option>FCO Rural</option><option>FNE Rural</option><option>FNO Rural</option><option>Custeio Safra</option><option>Investimento</option><option>BNDES</option><option>Moderfrota</option><option>Inovagro</option></select>
+          </div>
+          <div class="fg"><label>Valor pretendido (R$)</label><input type="number" id="f-valcred" placeholder="0"></div>
+          <div class="fg fc"><label>Observações / o que você precisa</label><textarea id="f-obs" placeholder="Conte um pouco sobre sua necessidade de crédito, prazos, etc."></textarea></div>
+        </div>
+      </div>
+
+      <div class="tc" id="t-doc">
+        <div class="ibox" onclick="document.getElementById('f-files').click()">
+          <div class="iico">📎</div>
+          <p><strong>Clique para escolher</strong> fotos da propriedade, documentos (RG, CPF, CAR, matrícula, comprovante de renda, etc.)</p>
+        </div>
+        <input type="file" id="f-files" multiple accept="image/*,.pdf,.doc,.docx" style="display:none" onchange="onFilesChosen(event)">
+        <div class="flist" id="flist"></div>
+        <p class="hint">Máx. 15MB por arquivo. Formatos aceitos: imagens, PDF e Word.</p>
+      </div>
+
+      <div class="bgrp">
+        <button class="btn bg" id="btn-enviar" onclick="enviarSolicitacao()">📤 Enviar para análise</button>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="stit">Minhas solicitações</div>
+      <div class="mlist" id="mlist"><p class="hint">Carregando...</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="narea" id="narea"></div>
+
+<!-- Firebase SDK (compat) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+<script>
+/* ============================================================
+   FIREBASE — CONFIGURAÇÃO COMPARTILHADA
+   Usado por: portal-produtor.html  e  crm-agro-pro.html
+   ============================================================
+   COMO OBTER ESSAS CHAVES (5 minutos, gratuito):
+   1. Acesse https://console.firebase.google.com
+   2. "Adicionar projeto" → dê um nome (ex: agro-consultoria)
+   3. No painel do projeto, clique no ícone "</>" (Web) para
+      registrar um app da Web → copie o objeto firebaseConfig
+      gerado e cole abaixo, substituindo os valores de exemplo.
+   4. Ative os serviços que este sistema usa:
+      - Build > Authentication > Sign-in method > ative "E-mail/senha"
+      - Build > Firestore Database > Criar banco de dados (modo produção)
+      - Build > Storage > Começar (para fotos/arquivos dos produtores)
+   5. Configure as regras de segurança (veja REGRAS-FIRESTORE.txt e
+      REGRAS-STORAGE.txt que também foram gerados) — sem isso,
+      QUALQUER pessoa poderia ler/gravar os dados.
+   ============================================================ */
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCqmiX1MvRXua6PLK7ctnwqxbE9O2Gdou0",
+  authDomain: "agromos-27a92.firebaseapp.com",
+  projectId: "agromos-27a92",
+  storageBucket: "agromos-27a92.firebasestorage.app",
+  messagingSenderId: "399990766158",
+  appId: "1:399990766158:web:b51cddd3b3f1ca5181e11f"
+};
+
+// Inicializa (compat SDK — carregado via <script> nas páginas HTML)
+firebase.initializeApp(firebaseConfig);
+const fbAuth = firebase.auth();
+const fbDb = firebase.firestore();
+const fbStorage = firebase.storage();
+
+/* Lista de e-mails autorizados a acessar o CRM como colaborador.
+   Edite esta lista (ou, melhor, gerencie pela coleção "colaboradores"
+   no Firestore — veja abaixo) sempre que contratar/desligar alguém.
+   Isso é checado no login do CRM em crm-agro-pro.html. */
+async function ehColaboradorAutorizado(email) {
+  try {
+    const doc = await fbDb.collection('colaboradores').doc(email.toLowerCase()).get();
+    return doc.exists;
+  } catch (e) {
+    console.error('Erro ao checar colaborador:', e);
+    return false;
+  }
+}
+
+</script>
+
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+let PENDING_FILES = []; // {file, previewUrl, tipo}
+
+function notify(msg, tipo='ok', ms=4000){
+  const el = document.createElement('div');
+  el.className = `notif ${tipo}`;
+  el.textContent = msg;
+  $('narea').appendChild(el);
+  setTimeout(()=>el.remove(), ms);
+}
+
+function toggleModo(m){
+  $('lerr').style.display='none';
+  $('bloco-login').style.display = m==='login' ? 'block':'none';
+  $('bloco-cad').style.display = m==='cad' ? 'block':'none';
+}
+
+function switchTab(el){
+  el.parentElement.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  el.closest('.sec').querySelectorAll('.tc').forEach(t=>t.classList.remove('on'));
+  $(el.dataset.tc).classList.add('on');
+}
+
+function showErr(msg){
+  const e = $('lerr'); e.textContent = msg; e.style.display='block';
+}
+
+// ---------- AUTH ----------
+async function doRegister(){
+  const nome = $('r-nome').value.trim();
+  const email = $('r-email').value.trim();
+  const senha = $('r-senha').value;
+  if(!nome || !email || senha.length < 6){ showErr('Preencha nome, e-mail e senha (mín. 6 caracteres).'); return; }
+  try{
+    const cred = await fbAuth.createUserWithEmailAndPassword(email, senha);
+    await cred.user.updateProfile({ displayName: nome });
+    await fbDb.collection('produtores').doc(cred.user.uid).set({
+      nome, email, criado_em: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    notify('Conta criada com sucesso!');
+  }catch(e){ showErr(traduzErro(e)); }
+}
+
+async function doLogin(){
+  const email = $('l-email').value.trim();
+  const senha = $('l-senha').value;
+  if(!email || !senha){ showErr('Informe e-mail e senha.'); return; }
+  try{
+    await fbAuth.signInWithEmailAndPassword(email, senha);
+  }catch(e){ showErr(traduzErro(e)); }
+}
+
+function doLogout(){ fbAuth.signOut(); }
+
+function traduzErro(e){
+  const map = {
+    'auth/email-already-in-use':'Este e-mail já está cadastrado.',
+    'auth/invalid-email':'E-mail inválido.',
+    'auth/weak-password':'Senha muito fraca (mín. 6 caracteres).',
+    'auth/user-not-found':'Usuário não encontrado.',
+    'auth/wrong-password':'Senha incorreta.',
+    'auth/invalid-credential':'E-mail ou senha incorretos.'
+  };
+  return map[e.code] || ('Erro: ' + e.message);
+}
+
+fbAuth.onAuthStateChanged(user=>{
+  if(user){
+    $('screen-login').style.display='none';
+    $('screen-app').style.display='block';
+    $('hd-user').textContent = '👤 ' + (user.displayName || user.email);
+    carregarMinhasSolicitacoes(user.uid);
+  } else {
+    $('screen-login').style.display='flex';
+    $('screen-app').style.display='none';
+  }
+});
+
+// ---------- ARQUIVOS ----------
+function onFilesChosen(ev){
+  const novos = Array.from(ev.target.files);
+  novos.forEach(file=>{
+    if(file.size > 15*1024*1024){ notify(`"${file.name}" excede 15MB e foi ignorado.`, 'err'); return; }
+    PENDING_FILES.push({ file, previewUrl: file.type.startsWith('image/') ? URL.createObjectURL(file) : null });
+  });
+  ev.target.value = '';
+  renderFileList();
+}
+
+function renderFileList(){
+  const wrap = $('flist');
+  wrap.innerHTML = '';
+  PENDING_FILES.forEach((pf, i)=>{
+    const div = document.createElement('div');
+    div.className = 'fitem';
+    div.innerHTML = `
+      ${pf.previewUrl ? `<img src="${pf.previewUrl}">` : `<div class="fico">📄</div>`}
+      <span class="fname">${pf.file.name}</span>
+      <span>${(pf.file.size/1024/1024).toFixed(1)}MB</span>
+      <span class="frm" onclick="removerArquivo(${i})">✕</span>`;
+    wrap.appendChild(div);
+  });
+}
+function removerArquivo(i){ PENDING_FILES.splice(i,1); renderFileList(); }
+
+// ---------- ENVIO ----------
+async function enviarSolicitacao(){
+  const user = fbAuth.currentUser;
+  if(!user){ return; }
+  const nome = $('f-nome').value.trim();
+  const cpf = $('f-cpf').value.trim();
+  if(!nome || !cpf){ notify('Preencha ao menos Nome e CPF/CNPJ na aba Pessoal.', 'err'); switchTab(document.querySelector('[data-tc="t-pes"]')); return; }
+
+  const btn = $('btn-enviar');
+  btn.disabled = true; btn.textContent = '⏳ Enviando...';
+
+  try{
+    // 1. Upload dos arquivos para o Storage
+    const anexos = [];
+    for(const pf of PENDING_FILES){
+      const path = `solicitacoes/${user.uid}/${Date.now()}_${pf.file.name}`;
+      const ref = fbStorage.ref().child(path);
+      await ref.put(pf.file);
+      const url = await ref.getDownloadURL();
+      anexos.push({ nome: pf.file.name, url, tipo: pf.file.type, tamanho: pf.file.size });
+    }
+
+    // 2. Grava a solicitação no Firestore
+    const dados = {
+      produtor_uid: user.uid,
+      produtor_email: user.email,
+      produtor_nome_conta: user.displayName || '',
+      status: 'pendente',
+      criado_em: firebase.firestore.FieldValue.serverTimestamp(),
+      nome, cpf,
+      nasc: $('f-nasc').value,
+      tel: $('f-tel').value,
+      whats: $('f-whats').value,
+      fazenda: $('f-fazenda').value,
+      mun: $('f-mun').value,
+      uf: $('f-uf').value,
+      ha: $('f-ha').value,
+      cult: $('f-cult').value,
+      ncar: $('f-ncar').value,
+      banco: $('f-banco').value,
+      linha: $('f-linha').value,
+      valcred: $('f-valcred').value,
+      obs: $('f-obs').value,
+      anexos
+    };
+    await fbDb.collection('solicitacoes').add(dados);
+
+    notify('✅ Solicitação enviada! Nossa equipe vai analisar em breve.');
+    PENDING_FILES = []; renderFileList();
+    ['f-nome','f-cpf','f-nasc','f-tel','f-whats','f-fazenda','f-mun','f-ha','f-ncar','f-valcred','f-obs']
+      .forEach(id=>$(id).value='');
+    carregarMinhasSolicitacoes(user.uid);
+  }catch(e){
+    console.error(e);
+    notify('Erro ao enviar: ' + e.message, 'err', 6000);
+  }finally{
+    btn.disabled = false; btn.textContent = '📤 Enviar para análise';
+  }
+}
+
+// ---------- LISTA DE SOLICITAÇÕES DO PRODUTOR ----------
+async function carregarMinhasSolicitacoes(uid){
+  const wrap = $('mlist');
+  try{
+    const snap = await fbDb.collection('solicitacoes').where('produtor_uid','==',uid).get();
+    if(snap.empty){ wrap.innerHTML = '<p class="hint">Você ainda não enviou nenhuma solicitação.</p>'; return; }
+    const badges = { pendente:['by','⏳ Em análise'], aprovado:['bg2','✅ Aprovado'], rejeitado:['br','❌ Rejeitado'] };
+    const rows = snap.docs
+      .map(d=>({id:d.id, ...d.data()}))
+      .sort((a,b)=> (b.criado_em?.seconds||0) - (a.criado_em?.seconds||0));
+    wrap.innerHTML = rows.map(r=>{
+      const [cls,label] = badges[r.status] || badges.pendente;
+      const data = r.criado_em?.seconds ? new Date(r.criado_em.seconds*1000).toLocaleDateString('pt-BR') : '—';
+      return `<div class="mitem">
+        <div class="mtxt"><strong>${r.nome||'—'}</strong><span>Enviado em ${data} · ${(r.anexos||[]).length} anexo(s)</span></div>
+        <span class="bdg ${cls}">${label}</span>
+      </div>`;
+    }).join('');
+  }catch(e){
+    wrap.innerHTML = '<p class="hint">Não foi possível carregar suas solicitações.</p>';
+    console.error(e);
+  }
+}
+</script>
+</body>
+</html>

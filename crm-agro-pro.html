@@ -1,0 +1,1927 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRM Agro Pro</title>
+<style>
+:root{
+  --g1:#1a3a2a;--g2:#2d6a4f;--g3:#52b788;--g4:#d8f3dc;
+  --terra:#a0522d;--terra2:#f4e0d0;--am:#f4a261;
+  --az:#457b9d;--az2:#dce8f0;--bg:#f4f6f0;
+  --bd:#d0d8c8;--txt:#2a2a2a;--w:#fff;
+  --verm:#e63946;--verm2:#fde8ea;
+  --f:'Segoe UI',system-ui,sans-serif;
+  --sh:0 1px 4px rgba(0,0,0,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--f);background:var(--bg);color:var(--txt);font-size:14px}
+input,select,textarea,button{font-family:var(--f)}
+
+/* LOGIN */
+#screen-login{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,var(--g1) 0%,var(--g2) 55%,#40916c 100%)}
+.lbox{background:white;border-radius:16px;padding:40px 36px;width:390px;box-shadow:0 24px 64px rgba(0,0,0,.32)}
+.llogo{text-align:center;margin-bottom:28px}
+.llogo h1{font-size:26px;font-weight:800;color:var(--g1)}
+.llogo h1 span{color:var(--g3)}
+.llogo p{color:#7a8a70;font-size:13px;margin-top:4px}
+.lerr{background:var(--verm2);color:var(--verm);border-radius:6px;padding:10px 12px;font-size:13px;margin-bottom:12px;display:none}
+.lsep{margin:18px 0;border:none;border-top:1px solid var(--bd)}
+.lreg-tit{font-size:12px;color:#7a8a70;text-align:center;margin-bottom:10px}
+
+/* APP */
+#screen-app{display:none}
+.hdr{background:var(--g1);color:white;padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.hlogo{font-size:18px;font-weight:800;letter-spacing:-.5px}
+.hlogo span{color:var(--g3)}
+.hright{display:flex;align-items:center;gap:10px;font-size:13px}
+.hubadge{background:rgba(255,255,255,.12);padding:4px 12px;border-radius:20px}
+.halertas{cursor:pointer;font-size:12px;color:#95d5b2}
+.lay{display:flex;min-height:calc(100vh - 52px)}
+
+/* SIDEBAR */
+.nav{width:195px;background:var(--g1);padding:10px 0;flex-shrink:0}
+.nav a{display:flex;align-items:center;gap:9px;padding:10px 16px;color:#9abfaa;text-decoration:none;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;border-left:3px solid transparent}
+.nav a:hover{color:white;background:rgba(255,255,255,.06)}
+.nav a.on{color:white;background:rgba(82,183,136,.15);border-left-color:var(--g3)}
+.nav .sp{padding:10px 16px 3px;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#476a54}
+.main{flex:1;padding:22px;overflow-y:auto}
+
+/* PAGES */
+.pg{display:none}.pg.on{display:block}
+.ptit{font-size:21px;font-weight:700;color:var(--g1);margin-bottom:3px}
+.psub{color:#6b7c6a;font-size:13px;margin-bottom:18px}
+
+/* CARD STATS */
+.cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px}
+.cs{background:white;border-radius:10px;padding:14px 16px;border-left:4px solid var(--g3);box-shadow:var(--sh)}
+.cs.am{border-left-color:var(--am)}.cs.az{border-left-color:var(--az)}.cs.vr{border-left-color:var(--verm)}.cs.te{border-left-color:var(--terra)}
+.cs .n{font-size:26px;font-weight:700;color:var(--g1)}
+.cs .l{font-size:11px;color:#6b7c6a;margin-top:2px}
+.cs .s{font-size:10px;color:#9aab95;margin-top:5px}
+
+/* SECTION */
+.sec{background:white;border-radius:10px;padding:18px;margin-bottom:16px;box-shadow:var(--sh)}
+.stit{font-size:13px;font-weight:700;color:var(--g1);margin-bottom:12px;padding-bottom:9px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between}
+
+/* BUTTONS */
+.btn{padding:7px 14px;border-radius:6px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:5px;line-height:1.3}
+.bg{background:var(--g2);color:white}.bg:hover{background:var(--g1)}
+.bo{background:white;color:var(--g2);border:1.5px solid var(--g2)}.bo:hover{background:var(--g4)}
+.bv{background:var(--verm);color:white}.bv:hover{background:#c0303c}
+.bam{background:var(--am);color:white}
+.baz{background:var(--az);color:white}
+.bsm{padding:5px 10px;font-size:12px}.bxs{padding:3px 8px;font-size:11px}
+.bgrp{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.bfull{width:100%;justify-content:center;padding:10px}
+
+/* FORMS */
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:11px}
+.fg{display:flex;flex-direction:column;gap:3px}
+.fg label{font-size:11px;font-weight:600;color:#4a6a54;text-transform:uppercase;letter-spacing:.4px}
+.fg input,.fg select,.fg textarea{padding:8px 10px;border:1.5px solid var(--bd);border-radius:6px;font-size:13px;background:white;color:var(--txt);transition:border-color .15s}
+.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--g3);box-shadow:0 0 0 3px rgba(82,183,136,.12)}
+.fg textarea{resize:vertical;min-height:60px}
+.fc{grid-column:1/-1}
+.ferr{font-size:11px;color:var(--verm);display:none;margin-top:2px}
+.fg.err input,.fg.err select{border-color:var(--verm)}
+.fg.err .ferr{display:block}
+
+/* TABLE */
+.twrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{background:var(--g1);color:white;padding:9px 11px;text-align:left;font-size:11px;font-weight:600;white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--bd)}
+tbody tr:hover{background:#f8faf6}
+tbody td{padding:9px 11px;vertical-align:middle}
+.lnk{font-weight:600;color:var(--g2);cursor:pointer}.lnk:hover{text-decoration:underline}
+.erow td{text-align:center;color:#9aab95;padding:28px;font-style:italic}
+
+/* BADGES */
+.bdg{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
+.bg2{background:var(--g4);color:var(--g2)}.by{background:#fef3cd;color:#b07a00}
+.br{background:var(--verm2);color:var(--verm)}.bb{background:var(--az2);color:var(--az)}
+.bc{background:#e8e8e8;color:#555}.bo2{background:#fde8d0;color:#c05a00}
+
+/* MODAL */
+.ovr{display:none;position:fixed;inset:0;background:rgba(0,0,0,.48);z-index:200;align-items:center;justify-content:center;padding:16px}
+.ovr.on{display:flex}
+.mdl{background:white;border-radius:12px;padding:26px;width:100%;max-width:700px;max-height:92vh;overflow-y:auto;position:relative}
+.mdlsm{max-width:440px}
+.mtit{font-size:17px;font-weight:700;color:var(--g1);margin-bottom:16px}
+.mclose{position:absolute;top:16px;right:18px;font-size:20px;cursor:pointer;color:#888;background:none;border:none;line-height:1}
+
+/* TABS */
+.tabs{display:flex;gap:1px;margin-bottom:16px;border-bottom:2px solid var(--bd)}
+.tab{padding:8px 16px;cursor:pointer;font-size:13px;font-weight:600;color:#6b7c6a;border-bottom:2px solid transparent;margin-bottom:-2px}
+.tab.on{color:var(--g2);border-bottom-color:var(--g2)}
+.tc{display:none}.tc.on{display:block}
+
+/* SEARCH */
+.srow{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.sinput{flex:1;min-width:160px;padding:8px 12px;border:1.5px solid var(--bd);border-radius:6px;font-size:13px;background:white}
+.sinput:focus{outline:none;border-color:var(--g3)}
+
+/* ALERTS */
+.alist{display:flex;flex-direction:column;gap:7px}
+.ait{background:white;border-radius:8px;padding:11px 14px;display:flex;align-items:center;gap:11px;border-left:4px solid var(--am);box-shadow:var(--sh)}
+.ait.urg{border-left-color:var(--verm)}.ait.inf{border-left-color:var(--az)}
+.aico{font-size:18px;flex-shrink:0}
+.atxt strong{display:block;font-size:13px}.atxt span{font-size:12px;color:#6b7c6a}
+.aac{margin-left:auto;flex-shrink:0}
+
+/* KANBAN */
+.kanban{display:flex;gap:11px;overflow-x:auto;padding-bottom:8px;min-height:200px}
+.kcol{min-width:185px;flex-shrink:0;background:#ecf0e8;border-radius:10px;padding:11px}
+.kctit{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--g1);margin-bottom:9px;padding-bottom:7px;border-bottom:2px solid var(--g3);display:flex;justify-content:space-between;align-items:center}
+.kcard{background:white;border-radius:7px;padding:9px 11px;margin-bottom:7px;box-shadow:0 1px 3px rgba(0,0,0,.08);border-left:3px solid var(--g3);cursor:default;transition:box-shadow .15s;position:relative}
+.kcard:hover{box-shadow:0 3px 8px rgba(0,0,0,.14)}
+.kcard.am{border-left-color:var(--am)}.kcard.az{border-left-color:var(--az)}.kcard.te{border-left-color:var(--terra)}
+.kcnome{font-weight:600;font-size:13px;margin-bottom:3px;padding-right:40px}
+.kcinfo{font-size:11px;color:#6b7c6a}
+.kcval{font-size:12px;font-weight:700;color:var(--g2);margin-top:5px}
+.kcacts{position:absolute;top:8px;right:8px;display:flex;gap:3px}
+.kempty{font-size:12px;color:#b0b8a8;text-align:center;padding:14px 0;font-style:italic}
+
+/* TICKET BOX */
+.tbox{background:var(--g4);border-radius:8px;padding:12px 16px;display:inline-flex;gap:22px;margin-bottom:16px;flex-wrap:wrap}
+.ti .tl{font-size:10px;font-weight:700;color:#4a6a54;text-transform:uppercase}
+.ti .tv{font-size:20px;font-weight:700;color:var(--g1)}
+
+/* NOTIFY */
+.narea{position:fixed;bottom:20px;right:20px;z-index:999;display:flex;flex-direction:column;gap:8px}
+.notif{background:var(--g1);color:white;padding:12px 18px;border-radius:8px;font-size:13px;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,.25);animation:sin .3s ease;max-width:320px}
+.notif.err{background:var(--verm)}.notif.ok{background:var(--g2)}.notif.info{background:var(--az)}
+@keyframes sin{from{transform:translateX(40px);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* CONFIRM */
+.cbox{background:white;border-radius:10px;padding:28px;max-width:360px;width:100%;text-align:center}
+.cbox h3{font-size:16px;color:var(--g1);margin-bottom:8px}
+.cbox p{font-size:13px;color:#6b7c6a;margin-bottom:20px}
+
+/* PROGRESS */
+.pbar{height:6px;background:var(--bd);border-radius:3px;margin-top:4px;overflow:hidden}
+.pfill{height:100%;background:var(--g3);border-radius:3px}
+
+/* IMPORT BOX */
+.ibox{border:2px dashed var(--bd);border-radius:10px;padding:36px;text-align:center;cursor:pointer;transition:all .15s;background:white}
+.ibox:hover{border-color:var(--g3);background:var(--g4)}
+.ibox .iico{font-size:40px;margin-bottom:10px}
+
+/* PERFIL */
+.pcard{background:white;border-radius:8px;padding:14px;margin-bottom:10px;box-shadow:var(--sh)}
+.pcardtit{font-size:12px;font-weight:700;color:var(--g2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.4px}
+
+/* SOLICITAÇÕES */
+.mitem{background:white;border-radius:8px;padding:13px 15px;box-shadow:var(--sh);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;cursor:pointer;border-left:4px solid var(--am)}
+.mitem:hover{box-shadow:0 3px 10px rgba(0,0,0,.12)}
+.mitem.st-aprovado{border-left-color:var(--g3)}
+.mitem.st-rejeitado{border-left-color:var(--verm)}
+.mitem .mtxt strong{display:block;font-size:13.5px;color:var(--g1)}
+.mitem .mtxt span{font-size:12px;color:#6b7c6a}
+.anexgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin-top:8px}
+.anexit{border:1px solid var(--bd);border-radius:8px;overflow:hidden;text-align:center;text-decoration:none;color:var(--txt);background:#fafcf9;display:block}
+.anexit img{width:100%;height:80px;object-fit:cover;display:block}
+.anexit .aicoW{height:80px;display:flex;align-items:center;justify-content:center;font-size:26px;background:var(--g4)}
+.anexit .anome{font-size:10.5px;padding:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+@media(max-width:700px){
+  .nav{width:50px}.nav a span:last-child{display:none}.nav .sp{display:none}
+  .main{padding:12px}.fgrid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ==============================
+  TELA DE LOGIN
+============================== -->
+<div id="screen-login">
+  <div class="lbox">
+    <div class="llogo">
+      <h1>🌾 CRM <span>Agro</span> Pro</h1>
+      <p>Crédito Rural · Georreferenciamento · Ambiental</p>
+    </div>
+    <div class="lerr" id="lerr"></div>
+    <div class="fg" style="margin-bottom:10px">
+      <label>E-mail</label>
+      <input type="email" id="l-email" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div class="fg" style="margin-bottom:16px">
+      <label>Senha</label>
+      <input type="password" id="l-senha" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="btn bg bfull" id="btn-login" onclick="doLogin()">Entrar no Sistema</button>
+    <p style="text-align:center;font-size:11px;color:#9aab95;margin-top:10px">Acesso restrito a colaboradores autorizados.<br>Precisa de acesso? Fale com o administrador.</p>
+  </div>
+</div>
+
+<!-- ==============================
+  APLICAÇÃO PRINCIPAL
+============================== -->
+<div id="screen-app">
+  <header class="hdr">
+    <div class="hlogo">🌾 CRM <span>Agro</span> Pro</div>
+    <div class="hright">
+      <span class="halertas" id="hd-alert" onclick="navTo('alertas')"></span>
+      <span class="hubadge" id="hd-user"></span>
+      <button class="btn bo bsm" onclick="doLogout()">Sair</button>
+    </div>
+  </header>
+  <div class="lay">
+    <nav class="nav" id="sidebar">
+      <div class="sp">Início</div>
+      <a id="nav-dashboard" onclick="navTo('dashboard')"><span>📊</span><span>Dashboard</span></a>
+      <a id="nav-alertas" onclick="navTo('alertas')"><span>🔔</span><span>Alertas</span></a>
+      <div class="sp">Clientes</div>
+      <a id="nav-clientes" onclick="navTo('clientes')"><span>🧑‍🌾</span><span>Carteira</span></a>
+      <a id="nav-solicitacoes" onclick="navTo('solicitacoes')"><span>📥</span><span>Solicitações</span><span id="sol-badge" style="display:none;margin-left:auto;background:var(--verm);color:white;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px"></span></a>
+      <a id="nav-importar" onclick="navTo('importar')"><span>📂</span><span>Importar</span></a>
+      <div class="sp">Funis</div>
+      <a id="nav-prospeccao" onclick="navTo('prospeccao')"><span>🎯</span><span>Prospecção</span></a>
+      <a id="nav-credito" onclick="navTo('credito')"><span>💰</span><span>Crédito Rural</span></a>
+      <a id="nav-ambiental" onclick="navTo('ambiental')"><span>🌿</span><span>Ambiental & Geo</span></a>
+      <div class="sp">Gestão</div>
+      <a id="nav-propostas" onclick="navTo('propostas')"><span>📄</span><span>Propostas</span></a>
+    </nav>
+    <main class="main">
+
+      <!-- DASHBOARD -->
+      <div class="pg" id="pg-dashboard">
+        <div class="ptit">📊 Dashboard</div>
+        <div class="psub" id="dash-sub"></div>
+        <div class="cgrid" id="dash-cards"></div>
+        <div class="sec">
+          <div class="stit">🔔 Alertas em Destaque <button class="btn bo bxs" onclick="navTo('alertas')">Ver todos</button></div>
+          <div class="alist" id="dash-alist"></div>
+        </div>
+        <div class="sec">
+          <div class="stit">📈 Resumo dos Funis</div>
+          <div id="dash-funis" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px"></div>
+        </div>
+        <div class="sec">
+          <div class="stit">💰 Propostas Recentes</div>
+          <div id="dash-propostas"></div>
+        </div>
+      </div>
+
+      <!-- ALERTAS -->
+      <div class="pg" id="pg-alertas">
+        <div class="ptit">🔔 Central de Alertas</div>
+        <div class="psub">Automações baseadas nos dados cadastrados</div>
+        <div class="sec">
+          <div class="stit">⚙️ Regras Ativas</div>
+          <table><thead><tr><th>Gatilho</th><th>Antecedência</th><th>Ação Disparada</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>🎂 Aniversário do Produtor</td><td>1 dia antes</td><td>Notificação + Copiar mensagem WhatsApp</td><td><span class="bdg bg2">Ativo</span></td></tr>
+            <tr><td>💰 Vencimento de Crédito</td><td>90 dias antes</td><td>Alerta + Abrir oportunidade de renovação</td><td><span class="bdg bg2">Ativo</span></td></tr>
+            <tr><td>🌿 Vencimento de Licença Ambiental</td><td>180 dias antes</td><td>Alerta + Agendar renovação</td><td><span class="bdg bg2">Ativo</span></td></tr>
+          </tbody></table>
+        </div>
+        <div class="sec"><div class="stit">🎂 Aniversários — próximos 7 dias</div><div class="alist" id="al-aniv"></div></div>
+        <div class="sec"><div class="stit">💰 Créditos vencendo em até 90 dias</div><div class="alist" id="al-cred"></div></div>
+        <div class="sec"><div class="stit">🌿 Licenças vencendo em até 180 dias</div><div class="alist" id="al-lic"></div></div>
+      </div>
+
+      <!-- CLIENTES -->
+      <div class="pg" id="pg-clientes">
+        <div class="ptit">🧑‍🌾 Carteira de Clientes</div>
+        <div class="psub">Todos os produtores da sua consultoria</div>
+        <div class="tbox" id="ticket-box"></div>
+        <div class="srow">
+          <input class="sinput" id="s-cli" placeholder="🔍 Nome, fazenda, município, CPF..." oninput="renderClientes()">
+          <select class="sinput" style="flex:0 0 175px" id="f-car" onchange="renderClientes()">
+            <option value="">Status CAR — todos</option>
+            <option>Aprovado</option><option>Em análise</option><option>Cadastrado</option><option>Não iniciado</option><option>Pendente</option>
+          </select>
+          <select class="sinput" style="flex:0 0 120px" id="f-uf" onchange="renderClientes()">
+            <option value="">UF — todos</option>
+            <option>MT</option><option>MS</option><option>GO</option><option>PR</option><option>SP</option><option>MG</option><option>BA</option><option>PA</option><option>TO</option><option>RO</option>
+          </select>
+          <button class="btn bg" onclick="openClienteModal()">+ Novo Cliente</button>
+        </div>
+        <div class="sec" style="padding:0">
+          <div class="twrap">
+            <table>
+              <thead><tr><th>Nome / Documento</th><th>Fazenda</th><th>Município / UF</th><th>Área</th><th>Cultura</th><th>CAR</th><th>Crédito</th><th>Valor Cred.</th><th>Ações</th></tr></thead>
+              <tbody id="tb-clientes"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- SOLICITAÇÕES DE PRODUTORES (via Portal do Produtor / Firebase) -->
+      <div class="pg" id="pg-solicitacoes">
+        <div class="ptit">📥 Solicitações de Produtores</div>
+        <div class="psub">Enviadas pelos produtores através do Portal do Produtor</div>
+        <div class="srow">
+          <select class="sinput" style="flex:0 0 200px" id="sf-status" onchange="renderSolicitacoes()">
+            <option value="pendente">Pendentes</option>
+            <option value="aprovado">Aprovadas</option>
+            <option value="rejeitado">Rejeitadas</option>
+            <option value="">Todas</option>
+          </select>
+        </div>
+        <div id="sol-list" style="display:flex;flex-direction:column;gap:10px"></div>
+      </div>
+
+      <!-- DETALHE DA SOLICITAÇÃO -->
+      <div class="ovr" id="m-solicitacao">
+        <div class="mdl">
+          <button class="mclose" onclick="closeModal('m-solicitacao')">✕</button>
+          <div id="sol-detalhe"></div>
+        </div>
+      </div>
+
+      <!-- IMPORTAR -->
+      <div class="pg" id="pg-importar">
+        <div class="ptit">📂 Importar Clientes</div>
+        <div class="psub">Importe sua base via CSV ou cadastre manualmente</div>
+        <div class="tabs">
+          <div class="tab on" onclick="switchTab(this,'ti-csv')">📄 Upload CSV</div>
+          <div class="tab" onclick="switchTab(this,'ti-modelo')">📋 Modelo</div>
+          <div class="tab" onclick="switchTab(this,'ti-quick')">✏️ Rápido</div>
+        </div>
+        <div class="tc on" id="ti-csv">
+          <div class="sec">
+            <div class="stit">Enviar Arquivo CSV</div>
+            <div class="ibox" id="drop-zone" onclick="document.getElementById('finput').click()"
+              ondragover="event.preventDefault();this.style.borderColor='var(--g3)'"
+              ondragleave="this.style.borderColor='var(--bd)'"
+              ondrop="handleDrop(event)">
+              <div class="iico">📂</div>
+              <strong>Clique ou arraste seu arquivo CSV aqui</strong>
+              <p style="color:#7a8a70;font-size:12px;margin-top:6px">Colunas separadas por ; ou , — codificação UTF-8</p>
+              <input type="file" id="finput" style="display:none" accept=".csv,.txt" onchange="parseCSV(this)">
+            </div>
+            <div id="import-prev" style="display:none;margin-top:16px">
+              <div class="stit" style="margin-top:0">Prévia da importação</div>
+              <div id="import-prev-content"></div>
+              <div class="bgrp">
+                <button class="btn bg" id="btn-confirm-import">✅ Confirmar e Importar</button>
+                <button class="btn bo" onclick="cancelImport()">Cancelar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tc" id="ti-modelo">
+          <div class="sec">
+            <div class="stit">Colunas do Modelo CSV</div>
+            <p style="font-size:13px;color:#6b7c6a;margin-bottom:12px">✅ = extraído automaticamente | ✏️ = preencher depois</p>
+            <div class="twrap"><table>
+              <thead><tr><th>Campo</th><th>Coluna no CSV</th><th>Obrigatório</th><th>Origem</th></tr></thead>
+              <tbody>
+                <tr><td>Nome / Razão Social</td><td>nome</td><td>✅ Sim</td><td>✅ Auto</td></tr>
+                <tr><td>CPF / CNPJ</td><td>cpf_cnpj</td><td>✅ Sim</td><td>✅ Auto</td></tr>
+                <tr><td>Data de Nascimento</td><td>data_nasc</td><td>Para alertas</td><td>✅ Auto</td></tr>
+                <tr><td>E-mail</td><td>email</td><td>✅ Sim</td><td>✅ Auto</td></tr>
+                <tr><td>Telefone / WhatsApp</td><td>telefone</td><td>Não</td><td>✅ Auto</td></tr>
+                <tr><td>Nome da Fazenda</td><td>fazenda</td><td>Não</td><td>✅ Auto</td></tr>
+                <tr><td>Município</td><td>municipio</td><td>Não</td><td>✅ Auto</td></tr>
+                <tr><td>UF</td><td>uf</td><td>Não</td><td>✅ Auto</td></tr>
+                <tr><td>Hectares</td><td>hectares</td><td>Não</td><td>✅ Auto</td></tr>
+                <tr><td>Cultura Principal</td><td>cultura</td><td>Não</td><td>✅ Auto</td></tr>
+                <tr><td>Matrícula do Imóvel</td><td>matricula</td><td>Não</td><td>✅ Auto</td></tr>
+                <tr><td>Status CAR</td><td>status_car</td><td>Não</td><td>✅ Auto</td></tr>
+                <tr><td>Número do CAR</td><td>num_car</td><td>Não</td><td>✅ Auto</td></tr>
+                <tr><td>Banco</td><td>banco</td><td>Não</td><td>✅ Auto</td></tr>
+                <tr><td>Linha de Crédito</td><td>linha_credito</td><td>Não</td><td>✅ Auto</td></tr>
+                <tr><td>Valor Financiado</td><td>valor_credito</td><td>Não</td><td>✅ Auto</td></tr>
+                <tr><td>Vencimento do Crédito</td><td>venc_credito</td><td>Não</td><td>✅ Auto</td></tr>
+                <tr><td>Status Geo/Ambiental</td><td>status_geo</td><td>Não</td><td>✏️ Manual</td></tr>
+                <tr><td>Vencimento da Licença</td><td>venc_licenca</td><td>Para alertas</td><td>✏️ Manual</td></tr>
+                <tr><td>Observações</td><td>obs</td><td>Não</td><td>✏️ Manual</td></tr>
+              </tbody>
+            </table></div>
+            <div class="bgrp"><button class="btn bg" onclick="downloadModelo()">⬇️ Baixar Modelo CSV</button></div>
+          </div>
+        </div>
+        <div class="tc" id="ti-quick">
+          <div class="sec">
+            <div class="stit">Cadastro Rápido</div>
+            <div class="fgrid" id="quick-form">
+              <div class="fg fc" id="qfg-nome"><label>Nome Completo *</label><input id="q-nome" placeholder="João Pedro da Silva"><span class="ferr">Campo obrigatório</span></div>
+              <div class="fg" id="qfg-cpf"><label>CPF / CNPJ *</label><input id="q-cpf" placeholder="000.000.000-00"><span class="ferr">Já cadastrado</span></div>
+              <div class="fg"><label>Data de Nascimento</label><input type="date" id="q-nasc"></div>
+              <div class="fg" id="qfg-email"><label>E-mail *</label><input type="email" id="q-email"><span class="ferr">Já cadastrado</span></div>
+              <div class="fg"><label>WhatsApp</label><input id="q-tel" placeholder="(65) 99999-0000"></div>
+              <div class="fg"><label>Fazenda</label><input id="q-fazenda"></div>
+              <div class="fg"><label>Município</label><input id="q-mun"></div>
+              <div class="fg"><label>UF</label><select id="q-uf"><option>MT</option><option>MS</option><option>GO</option><option>PR</option><option>SP</option><option>MG</option><option>BA</option><option>PA</option><option>TO</option><option>RO</option></select></div>
+              <div class="fg"><label>Área (ha)</label><input type="number" id="q-ha"></div>
+              <div class="fg"><label>Cultura</label><select id="q-cult"><option>Soja</option><option>Milho</option><option>Algodão</option><option>Boi / Pastagem</option><option>Cana-de-açúcar</option><option>Café</option><option>Feijão</option><option>Arroz</option><option>Outro</option></select></div>
+            </div>
+            <div class="bgrp"><button class="btn bg" onclick="quickAdd()">+ Adicionar Cliente</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROSPECÇÃO -->
+      <div class="pg" id="pg-prospeccao">
+        <div class="ptit">🎯 Funil de Prospecção</div>
+        <div class="psub">Do primeiro contato ao fechamento</div>
+        <div style="display:flex;gap:10px;margin-bottom:14px;align-items:center;flex-wrap:wrap">
+          <button class="btn bg" onclick="openProspModal()">+ Novo Lead</button>
+          <div id="prosp-resumo" class="sec" style="margin:0;padding:8px 16px;display:inline-flex;gap:20px"></div>
+        </div>
+        <div class="kanban" id="kb-prosp"></div>
+      </div>
+
+      <!-- CRÉDITO -->
+      <div class="pg" id="pg-credito">
+        <div class="ptit">💰 Funil de Crédito Rural</div>
+        <div class="psub">Da documentação à liberação do crédito</div>
+        <div style="display:flex;gap:10px;margin-bottom:14px;align-items:center;flex-wrap:wrap">
+          <button class="btn bg" onclick="openCreditoModal()">+ Nova Operação</button>
+          <div id="cred-resumo" class="sec" style="margin:0;padding:8px 16px;display:inline-flex;gap:20px"></div>
+        </div>
+        <div class="kanban" id="kb-cred"></div>
+      </div>
+
+      <!-- AMBIENTAL -->
+      <div class="pg" id="pg-ambiental">
+        <div class="ptit">🌿 Funil Ambiental & Geo</div>
+        <div class="psub">Do orçamento à aprovação no órgão ambiental</div>
+        <div style="display:flex;gap:10px;margin-bottom:14px;align-items:center;flex-wrap:wrap">
+          <button class="btn bg" onclick="openAmbModal()">+ Novo Projeto</button>
+          <div id="amb-resumo" class="sec" style="margin:0;padding:8px 16px;display:inline-flex;gap:20px"></div>
+        </div>
+        <div class="kanban" id="kb-amb"></div>
+      </div>
+
+      <!-- PROPOSTAS -->
+      <div class="pg" id="pg-propostas">
+        <div class="ptit">📄 Propostas Comerciais</div>
+        <div class="psub">Todas as propostas enviadas</div>
+        <div class="srow">
+          <input class="sinput" id="s-prop" placeholder="🔍 Cliente, serviço, descrição..." oninput="renderPropostas()">
+          <select class="sinput" style="flex:0 0 180px" id="f-prop-st" onchange="renderPropostas()">
+            <option value="">Status — todos</option>
+            <option>Aberta</option><option>Em negociação</option><option>Fechada</option><option>Perdida</option>
+          </select>
+          <button class="btn bg" onclick="openPropostaModal()">+ Nova Proposta</button>
+        </div>
+        <div class="tbox" id="prop-totais"></div>
+        <div class="sec" style="padding:0">
+          <div class="twrap">
+            <table>
+              <thead><tr><th>Cliente</th><th>Serviço</th><th>Valor</th><th>Status</th><th>Data</th><th>Responsável</th><th>Ações</th></tr></thead>
+              <tbody id="tb-propostas"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- ==============================
+  MODAIS
+============================== -->
+
+<!-- CLIENTE -->
+<div class="ovr" id="m-cliente">
+  <div class="mdl">
+    <button class="mclose" onclick="closeModal('m-cliente')">✕</button>
+    <div class="mtit" id="mc-tit">Novo Cliente</div>
+    <input type="hidden" id="mc-id">
+    <div class="tabs">
+      <div class="tab on" onclick="switchTab(this,'mct-pes')">👤 Pessoal</div>
+      <div class="tab" onclick="switchTab(this,'mct-prop')">🌾 Propriedade</div>
+      <div class="tab" onclick="switchTab(this,'mct-cred')">💰 Crédito</div>
+      <div class="tab" onclick="switchTab(this,'mct-amb')">🌿 Ambiental</div>
+    </div>
+    <!-- Pessoal -->
+    <div class="tc on" id="mct-pes">
+      <div class="fgrid">
+        <div class="fg fc" id="fg-mc-nome"><label>Nome Completo / Razão Social *</label><input id="mc-nome" placeholder="João Pedro da Silva"><span class="ferr">Campo obrigatório</span></div>
+        <div class="fg" id="fg-mc-cpf"><label>CPF / CNPJ *</label><input id="mc-cpf" placeholder="000.000.000-00"><span class="ferr">Já cadastrado</span></div>
+        <div class="fg"><label>Data de Nascimento</label><input type="date" id="mc-nasc"></div>
+        <div class="fg" id="fg-mc-email"><label>E-mail *</label><input type="email" id="mc-email"><span class="ferr">Já cadastrado</span></div>
+        <div class="fg"><label>Telefone</label><input id="mc-tel" placeholder="(65) 99999-0000"></div>
+        <div class="fg"><label>WhatsApp</label><input id="mc-whats" placeholder="(65) 99999-0000"></div>
+      </div>
+    </div>
+    <!-- Propriedade -->
+    <div class="tc" id="mct-prop">
+      <div class="fgrid">
+        <div class="fg"><label>Nome da Fazenda</label><input id="mc-fazenda"></div>
+        <div class="fg"><label>Município</label><input id="mc-mun"></div>
+        <div class="fg"><label>UF</label><select id="mc-uf"><option>MT</option><option>MS</option><option>GO</option><option>PR</option><option>SP</option><option>MG</option><option>BA</option><option>PA</option><option>TO</option><option>RO</option><option>AC</option></select></div>
+        <div class="fg"><label>Área (hectares)</label><input type="number" id="mc-ha"></div>
+        <div class="fg"><label>Cultura Principal</label><select id="mc-cult"><option>Soja</option><option>Milho</option><option>Algodão</option><option>Boi / Pastagem</option><option>Cana-de-açúcar</option><option>Café</option><option>Feijão</option><option>Arroz</option><option>Outro</option></select></div>
+        <div class="fg"><label>Cultura Secundária</label><input id="mc-cult2"></div>
+        <div class="fg"><label>Nº Matrícula Imóvel</label><input id="mc-mat"></div>
+        <div class="fg"><label>Número do CAR</label><input id="mc-ncar" placeholder="MT-1234567-XXXXX"></div>
+        <div class="fg"><label>Status CAR</label><select id="mc-scar"><option>Não iniciado</option><option>Cadastrado</option><option>Em análise</option><option>Aprovado</option><option>Pendente</option></select></div>
+      </div>
+    </div>
+    <!-- Crédito -->
+    <div class="tc" id="mct-cred">
+      <div class="fgrid">
+        <div class="fg"><label>Banco / Instituição</label><select id="mc-banco"><option value="">Sem crédito</option><option>Banco do Brasil</option><option>SICREDI</option><option>Caixa Econômica</option><option>BDMG</option><option>BRB</option><option>Bradesco</option><option>Itaú</option><option>BNB</option><option>BASA</option><option>Outro</option></select></div>
+        <div class="fg"><label>Linha de Crédito</label><select id="mc-linha"><option value="">—</option><option>Pronaf</option><option>Pronamp</option><option>FCO Rural</option><option>FNE Rural</option><option>FNO Rural</option><option>Custeio Safra</option><option>Investimento</option><option>BNDES</option><option>Moderfrota</option><option>Inovagro</option></select></div>
+        <div class="fg"><label>Valor Financiado (R$)</label><input type="number" id="mc-valcred" placeholder="0"></div>
+        <div class="fg"><label>Data de Liberação</label><input type="date" id="mc-dtlib"></div>
+        <div class="fg"><label>Vencimento do Contrato</label><input type="date" id="mc-venc"></div>
+        <div class="fg"><label>Nº do Contrato</label><input id="mc-numcont"></div>
+      </div>
+    </div>
+    <!-- Ambiental -->
+    <div class="tc" id="mct-amb">
+      <div class="fgrid">
+        <div class="fg"><label>Tipo de Serviço Geo/Ambiental</label><select id="mc-tipogeo"><option value="">Nenhum</option><option>Georreferenciamento (SIGEF)</option><option>CAR</option><option>CAR + Georreferenciamento</option><option>Licença LP</option><option>Licença LI</option><option>Licença LO</option><option>Regularização Ambiental</option><option>PRAD</option></select></div>
+        <div class="fg"><label>Status do Projeto</label><select id="mc-sgeo"><option>Não iniciado</option><option>Orçamento</option><option>Orçamento Aprovado</option><option>Vistoria de Campo</option><option>Processando Dados</option><option>Protocolado</option><option>Entregue</option><option>Aprovado no Órgão</option></select></div>
+        <div class="fg"><label>Data da Vistoria</label><input type="date" id="mc-dtvistoria"></div>
+        <div class="fg"><label>Data de Emissão da Licença</label><input type="date" id="mc-dtlic"></div>
+        <div class="fg"><label>Vencimento da Licença</label><input type="date" id="mc-venclic"></div>
+        <div class="fg fc"><label>Observações / Histórico</label><textarea id="mc-obs" placeholder="Anotações, pendências, follow-ups..."></textarea></div>
+      </div>
+    </div>
+    <div class="bgrp">
+      <button class="btn bg" onclick="saveCliente()">✅ Salvar Cliente</button>
+      <button class="btn bo" onclick="closeModal('m-cliente')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROSPECÇÃO -->
+<div class="ovr" id="m-prosp">
+  <div class="mdl mdlsm">
+    <button class="mclose" onclick="closeModal('m-prosp')">✕</button>
+    <div class="mtit" id="mp-tit">Novo Lead</div>
+    <input type="hidden" id="mp-id">
+    <div class="fgrid">
+      <div class="fg fc" id="fg-mp-nome"><label>Nome *</label><input id="mp-nome"><span class="ferr">Campo obrigatório</span></div>
+      <div class="fg"><label>Telefone / WhatsApp</label><input id="mp-tel" placeholder="(65) 99999-0000"></div>
+      <div class="fg"><label>Município / UF</label><input id="mp-mun" placeholder="Sorriso-MT"></div>
+      <div class="fg"><label>Origem do Lead</label><select id="mp-orig"><option>Indicação</option><option>Redes Sociais</option><option>Site</option><option>Evento / Feira</option><option>Prospecção Ativa</option><option>WhatsApp</option></select></div>
+      <div class="fg"><label>Interesse Principal</label><select id="mp-int"><option>Crédito Rural</option><option>Georreferenciamento</option><option>CAR</option><option>Licença Ambiental</option><option>Pacote Completo</option></select></div>
+      <div class="fg"><label>Etapa</label><select id="mp-etapa"><option>Lead</option><option>Contato Realizado</option><option>Reunião Agendada</option><option>Proposta Enviada</option><option>Cliente Fechado</option></select></div>
+      <div class="fg"><label>Potencial (R$)</label><input type="number" id="mp-pot" placeholder="0"></div>
+      <div class="fg fc"><label>Observação</label><textarea id="mp-obs" placeholder="Como chegou? Necessidade específica?"></textarea></div>
+    </div>
+    <div class="bgrp">
+      <button class="btn bg" onclick="saveProsp()">✅ Salvar</button>
+      <button class="btn bo" onclick="closeModal('m-prosp')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- CRÉDITO -->
+<div class="ovr" id="m-credito">
+  <div class="mdl mdlsm">
+    <button class="mclose" onclick="closeModal('m-credito')">✕</button>
+    <div class="mtit" id="mcr-tit">Nova Operação de Crédito</div>
+    <input type="hidden" id="mcr-id">
+    <div class="fgrid">
+      <div class="fg fc" id="fg-mcr-cli"><label>Cliente *</label><select id="mcr-cli"><option value="">Selecione...</option></select><span class="ferr">Selecione um cliente</span></div>
+      <div class="fg"><label>Banco</label><select id="mcr-banco"><option>Banco do Brasil</option><option>SICREDI</option><option>Caixa</option><option>BDMG</option><option>BRB</option><option>BNB</option><option>BASA</option><option>Outro</option></select></div>
+      <div class="fg"><label>Linha de Crédito</label><select id="mcr-linha"><option>Pronaf</option><option>Pronamp</option><option>FCO Rural</option><option>FNE Rural</option><option>Custeio Safra</option><option>Investimento</option><option>BNDES</option></select></div>
+      <div class="fg" id="fg-mcr-val"><label>Valor (R$) *</label><input type="number" id="mcr-val" placeholder="0"><span class="ferr">Informe o valor</span></div>
+      <div class="fg"><label>Etapa</label><select id="mcr-etapa"><option>Documentação Solicitada</option><option>Projeto Elaborado</option><option>Protocolado no Banco</option><option>Aprovado / Liberado</option></select></div>
+      <div class="fg"><label>Vencimento</label><input type="date" id="mcr-venc"></div>
+      <div class="fg fc"><label>Observação</label><textarea id="mcr-obs"></textarea></div>
+    </div>
+    <div class="bgrp">
+      <button class="btn bg" onclick="saveCredito()">✅ Salvar</button>
+      <button class="btn bo" onclick="closeModal('m-credito')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- AMBIENTAL -->
+<div class="ovr" id="m-ambiental">
+  <div class="mdl mdlsm">
+    <button class="mclose" onclick="closeModal('m-ambiental')">✕</button>
+    <div class="mtit" id="ma-tit">Novo Projeto Ambiental / Geo</div>
+    <input type="hidden" id="ma-id">
+    <div class="fgrid">
+      <div class="fg fc" id="fg-ma-cli"><label>Cliente *</label><select id="ma-cli"><option value="">Selecione...</option></select><span class="ferr">Selecione um cliente</span></div>
+      <div class="fg"><label>Tipo de Serviço</label><select id="ma-tipo"><option>Georreferenciamento (SIGEF)</option><option>CAR</option><option>CAR + Geo</option><option>Licença LP</option><option>Licença LI</option><option>Licença LO</option><option>Regularização Ambiental</option><option>PRAD</option></select></div>
+      <div class="fg"><label>Etapa</label><select id="ma-etapa"><option>Orçamento Aprovado</option><option>Vistoria de Campo</option><option>Processamento de Dados</option><option>Entrega do Projeto</option><option>Aprovação no Órgão</option></select></div>
+      <div class="fg"><label>Valor (R$)</label><input type="number" id="ma-val" placeholder="0"></div>
+      <div class="fg"><label>Data da Vistoria</label><input type="date" id="ma-vist"></div>
+      <div class="fg"><label>Vencimento da Licença</label><input type="date" id="ma-venclic"></div>
+      <div class="fg fc"><label>Observação</label><textarea id="ma-obs"></textarea></div>
+    </div>
+    <div class="bgrp">
+      <button class="btn bg" onclick="saveAmbiental()">✅ Salvar</button>
+      <button class="btn bo" onclick="closeModal('m-ambiental')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROPOSTA -->
+<div class="ovr" id="m-proposta">
+  <div class="mdl mdlsm">
+    <button class="mclose" onclick="closeModal('m-proposta')">✕</button>
+    <div class="mtit" id="mpr-tit">Nova Proposta</div>
+    <input type="hidden" id="mpr-id">
+    <div class="fgrid">
+      <div class="fg fc" id="fg-mpr-cli"><label>Cliente *</label><select id="mpr-cli"><option value="">Selecione...</option></select><span class="ferr">Selecione um cliente</span></div>
+      <div class="fg"><label>Serviço</label><select id="mpr-serv"><option>Crédito Rural</option><option>Georreferenciamento</option><option>CAR</option><option>Licença LP</option><option>Licença LI</option><option>Licença LO</option><option>Pacote Completo</option><option>Regularização Ambiental</option></select></div>
+      <div class="fg" id="fg-mpr-val"><label>Valor (R$) *</label><input type="number" id="mpr-val" placeholder="0"><span class="ferr">Informe o valor</span></div>
+      <div class="fg"><label>Status</label><select id="mpr-status"><option>Aberta</option><option>Em negociação</option><option>Fechada</option><option>Perdida</option></select></div>
+      <div class="fg"><label>Data de Envio</label><input type="date" id="mpr-data"></div>
+      <div class="fg fc"><label>Descrição / Detalhamento</label><textarea id="mpr-desc" placeholder="O que está sendo proposto..."></textarea></div>
+    </div>
+    <div class="bgrp">
+      <button class="btn bg" onclick="saveProposta()">✅ Salvar</button>
+      <button class="btn bo" onclick="closeModal('m-proposta')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- PERFIL DO CLIENTE -->
+<div class="ovr" id="m-perfil">
+  <div class="mdl">
+    <button class="mclose" onclick="closeModal('m-perfil')">✕</button>
+    <div id="perfil-body"></div>
+  </div>
+</div>
+
+<!-- CONFIRMAÇÃO -->
+<div class="ovr" id="m-confirm">
+  <div class="cbox">
+    <h3>Confirmar Exclusão</h3>
+    <p id="confirm-msg">Tem certeza? Esta ação não pode ser desfeita.</p>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <button class="btn bv" id="confirm-ok">Excluir</button>
+      <button class="btn bo" onclick="closeModal('m-confirm')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div class="narea" id="narea"></div>
+
+<!-- ==============================
+  JAVASCRIPT — SISTEMA COMPLETO
+============================== -->
+<!-- Firebase SDK (compat) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+<script>
+/* ============================================================
+   FIREBASE — CONFIGURAÇÃO COMPARTILHADA
+   Usado por: portal-produtor.html  e  crm-agro-pro.html
+   ============================================================
+   COMO OBTER ESSAS CHAVES (5 minutos, gratuito):
+   1. Acesse https://console.firebase.google.com
+   2. "Adicionar projeto" → dê um nome (ex: agro-consultoria)
+   3. No painel do projeto, clique no ícone "</>" (Web) para
+      registrar um app da Web → copie o objeto firebaseConfig
+      gerado e cole abaixo, substituindo os valores de exemplo.
+   4. Ative os serviços que este sistema usa:
+      - Build > Authentication > Sign-in method > ative "E-mail/senha"
+      - Build > Firestore Database > Criar banco de dados (modo produção)
+      - Build > Storage > Começar (para fotos/arquivos dos produtores)
+   5. Configure as regras de segurança (veja REGRAS-FIRESTORE.txt e
+      REGRAS-STORAGE.txt que também foram gerados) — sem isso,
+      QUALQUER pessoa poderia ler/gravar os dados.
+   ============================================================ */
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCqmiX1MvRXua6PLK7ctnwqxbE9O2Gdou0",
+  authDomain: "agromos-27a92.firebaseapp.com",
+  projectId: "agromos-27a92",
+  storageBucket: "agromos-27a92.firebasestorage.app",
+  messagingSenderId: "399990766158",
+  appId: "1:399990766158:web:b51cddd3b3f1ca5181e11f"
+};
+
+// Inicializa (compat SDK — carregado via <script> nas páginas HTML)
+firebase.initializeApp(firebaseConfig);
+const fbAuth = firebase.auth();
+const fbDb = firebase.firestore();
+const fbStorage = firebase.storage();
+
+/* Lista de e-mails autorizados a acessar o CRM como colaborador.
+   Edite esta lista (ou, melhor, gerencie pela coleção "colaboradores"
+   no Firestore — veja abaixo) sempre que contratar/desligar alguém.
+   Isso é checado no login do CRM em crm-agro-pro.html. */
+async function ehColaboradorAutorizado(email) {
+  try {
+    const doc = await fbDb.collection('colaboradores').doc(email.toLowerCase()).get();
+    return doc.exists;
+  } catch (e) {
+    console.error('Erro ao checar colaborador:', e);
+    return false;
+  }
+}
+
+</script>
+
+<script>
+'use strict';
+
+// ============================================================
+// BANCO DE DADOS — localStorage como persistência real
+// ============================================================
+const DB = (() => {
+  const key = (uid, t) => `crmagro_${uid}_${t}`;
+
+  return {
+    all(uid, table) {
+      try { return JSON.parse(localStorage.getItem(key(uid, table)) || '[]'); }
+      catch { return []; }
+    },
+    save(uid, table, data) {
+      localStorage.setItem(key(uid, table), JSON.stringify(data));
+    },
+    insert(uid, table, obj) {
+      const rows = this.all(uid, table);
+      obj.id = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+      obj._created = new Date().toISOString();
+      obj._updated = new Date().toISOString();
+      rows.push(obj);
+      this.save(uid, table, rows);
+      return obj;
+    },
+    update(uid, table, id, patch) {
+      const rows = this.all(uid, table);
+      const i = rows.findIndex(r => r.id === id);
+      if (i < 0) return null;
+      rows[i] = { ...rows[i], ...patch, _updated: new Date().toISOString() };
+      this.save(uid, table, rows);
+      return rows[i];
+    },
+    remove(uid, table, id) {
+      this.save(uid, table, this.all(uid, table).filter(r => r.id !== id));
+    },
+    find(uid, table, id) {
+      return this.all(uid, table).find(r => r.id === id) || null;
+    }
+  };
+})();
+
+// ============================================================
+// AUTH — Firebase Auth, restrito a colaboradores autorizados
+// (a lista de e-mails autorizados vive na coleção "colaboradores"
+//  do Firestore — veja REGRAS-FIRESTORE.txt / firebase-config.js)
+// ============================================================
+
+// ============================================================
+// ESTADO GLOBAL
+// ============================================================
+let SES = null;
+let _pendImport = [];
+let _confirmCb = null;
+
+// ============================================================
+// UTILITÁRIOS
+// ============================================================
+const $ = id => document.getElementById(id);
+
+const fmt = {
+  brl: v => v ? 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 0 }) : '—',
+  dt: d => { if (!d) return '—'; try { return new Date(d + 'T12:00').toLocaleDateString('pt-BR'); } catch { return d; } },
+  diasAte: d => {
+    if (!d) return null;
+    return Math.ceil((new Date(d + 'T12:00') - new Date()) / 86_400_000);
+  },
+  diasAniv: d => {
+    if (!d) return null;
+    const hoje = new Date();
+    const [, m, dia] = d.split('-').map(Number);
+    let prox = new Date(hoje.getFullYear(), m - 1, dia);
+    if (prox <= hoje) prox = new Date(hoje.getFullYear() + 1, m - 1, dia);
+    return Math.ceil((prox - hoje) / 86_400_000);
+  },
+  hoje: () => new Date().toISOString().split('T')[0]
+};
+
+function notify(msg, tipo = 'ok', ms = 3500) {
+  const el = document.createElement('div');
+  el.className = `notif ${tipo}`;
+  el.textContent = msg;
+  $('narea').appendChild(el);
+  setTimeout(() => el.remove(), ms);
+}
+
+function openModal(id) { $(id).classList.add('on'); }
+function closeModal(id) { $(id).classList.remove('on'); }
+
+document.querySelectorAll('.ovr').forEach(o =>
+  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('on'); })
+);
+
+function switchTab(el, tcId) {
+  const par = el.closest('.mdl, .tc, .pg, .sec');
+  par.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  par.querySelectorAll('.tc').forEach(t => t.classList.remove('on'));
+  el.classList.add('on');
+  const tc = $(tcId); if (tc) tc.classList.add('on');
+}
+
+function confirm2(msg, cb) {
+  $('confirm-msg').textContent = msg;
+  _confirmCb = cb;
+  openModal('m-confirm');
+}
+$('confirm-ok').onclick = () => { if (_confirmCb) _confirmCb(); closeModal('m-confirm'); };
+
+function clearErrors(modalId) {
+  $(modalId).querySelectorAll('.fg.err').forEach(f => f.classList.remove('err'));
+}
+
+// ============================================================
+// AUTENTICAÇÃO
+// ============================================================
+function doLogin() {
+  const email = $('l-email').value.trim();
+  const senha = $('l-senha').value;
+  const el = $('lerr'); el.style.display = 'none';
+  if (!email || !senha) { el.textContent = 'Informe e-mail e senha.'; el.style.display = 'block'; return; }
+  const btn = $('btn-login'); btn.disabled = true; btn.textContent = 'Entrando...';
+  fbAuth.signInWithEmailAndPassword(email, senha)
+    .then(async cred => {
+      const autorizado = await ehColaboradorAutorizado(cred.user.email);
+      if (!autorizado) {
+        await fbAuth.signOut();
+        el.textContent = 'Este e-mail não tem acesso ao CRM. Fale com o administrador.';
+        el.style.display = 'block';
+        return;
+      }
+      // segue via onAuthStateChanged
+    })
+    .catch(() => {
+      el.textContent = 'E-mail ou senha incorretos.';
+      el.style.display = 'block';
+    })
+    .finally(() => { btn.disabled = false; btn.textContent = 'Entrar no Sistema'; });
+}
+
+function doLogout() {
+  fbAuth.signOut();
+  SES = null;
+  $('screen-login').style.display = 'flex';
+  $('screen-app').style.display = 'none';
+}
+
+// Observa o estado de login do Firebase e libera/bloqueia o CRM
+fbAuth.onAuthStateChanged(async user => {
+  if (!user) {
+    SES = null;
+    $('screen-login').style.display = 'flex';
+    $('screen-app').style.display = 'none';
+    return;
+  }
+  const autorizado = await ehColaboradorAutorizado(user.email);
+  if (!autorizado) {
+    await fbAuth.signOut();
+    return;
+  }
+  SES = { uid: user.uid, nome: user.displayName || user.email, email: user.email };
+  $('screen-login').style.display = 'none';
+  $('screen-app').style.display = 'block';
+  $('hd-user').textContent = '👤 ' + SES.nome;
+  seedDemoData();
+  navTo('dashboard');
+  escutarSolicitacoesPendentes();
+});
+
+// ============================================================
+// NAVEGAÇÃO
+// ============================================================
+const PAGE_RENDERS = {
+  dashboard: renderDashboard,
+  alertas: renderAlertas,
+  clientes: renderClientes,
+  solicitacoes: renderSolicitacoes,
+  importar: () => {},
+  prospeccao: renderFunilProsp,
+  credito: renderFunilCredito,
+  ambiental: renderFunilAmb,
+  propostas: renderPropostas
+};
+
+function navTo(pg) {
+  document.querySelectorAll('.pg').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.nav a').forEach(a => a.classList.remove('on'));
+  const page = $('pg-' + pg); if (page) page.classList.add('on');
+  const nav = $('nav-' + pg); if (nav) nav.classList.add('on');
+  if (PAGE_RENDERS[pg]) PAGE_RENDERS[pg]();
+}
+
+// ============================================================
+// SERVICES
+// ============================================================
+const Cli = {
+  all: () => DB.all(SES.uid, 'clientes'),
+  find: id => DB.find(SES.uid, 'clientes', id),
+  create: d => DB.insert(SES.uid, 'clientes', d),
+  update: (id, d) => DB.update(SES.uid, 'clientes', id, d),
+  remove: id => DB.remove(SES.uid, 'clientes', id),
+  validate(d, editId = null) {
+    const e = {};
+    if (!d.nome?.trim()) e.nome = 'Campo obrigatório';
+    if (!d.cpf_cnpj?.trim()) e.cpf = 'Campo obrigatório';
+    if (!d.email?.trim()) e.email = 'Campo obrigatório';
+    const todos = this.all();
+    if (todos.find(c => c.id !== editId && c.cpf_cnpj === d.cpf_cnpj && d.cpf_cnpj)) e.cpf = 'CPF/CNPJ já cadastrado';
+    if (todos.find(c => c.id !== editId && c.email === d.email && d.email)) e.email = 'E-mail já cadastrado';
+    return e;
+  },
+  ticketMedio() {
+    const c = this.all().filter(x => x.valor_credito);
+    if (!c.length) return 0;
+    return c.reduce((a, x) => a + Number(x.valor_credito), 0) / c.length;
+  },
+  totalCredito: () => DB.all(SES.uid, 'clientes').reduce((a, c) => a + Number(c.valor_credito || 0), 0)
+};
+
+// ============================================================
+// SOLICITAÇÕES DE PRODUTORES — vêm do Portal do Produtor (Firestore)
+// ============================================================
+let _solicitacoesCache = [];
+const STATUS_BADGE = { pendente: ['by', '⏳ Pendente'], aprovado: ['bg2', '✅ Aprovado'], rejeitado: ['br', '❌ Rejeitado'] };
+
+function escutarSolicitacoesPendentes() {
+  fbDb.collection('solicitacoes').where('status', '==', 'pendente')
+    .onSnapshot(snap => {
+      const badge = $('sol-badge');
+      if (!badge) return;
+      if (snap.size > 0) { badge.textContent = snap.size; badge.style.display = 'inline-block'; }
+      else badge.style.display = 'none';
+      if ($('pg-solicitacoes')?.classList.contains('on')) renderSolicitacoes();
+    }, err => console.error('Erro ao escutar solicitações:', err));
+}
+
+async function renderSolicitacoes() {
+  const wrap = $('sol-list');
+  wrap.innerHTML = '<p class="hint" style="color:#9aab95;font-style:italic">Carregando...</p>';
+  const status = $('sf-status').value;
+  try {
+    let q = fbDb.collection('solicitacoes');
+    q = status ? q.where('status', '==', status) : q;
+    const snap = await q.get();
+    _solicitacoesCache = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+      .sort((a, b) => (b.criado_em?.seconds || 0) - (a.criado_em?.seconds || 0));
+    if (!_solicitacoesCache.length) {
+      wrap.innerHTML = '<div class="erow" style="padding:28px;text-align:center;color:#9aab95;font-style:italic">Nenhuma solicitação encontrada</div>';
+      return;
+    }
+    wrap.innerHTML = _solicitacoesCache.map(r => {
+      const [cls, label] = STATUS_BADGE[r.status] || STATUS_BADGE.pendente;
+      const data = r.criado_em?.seconds ? new Date(r.criado_em.seconds * 1000).toLocaleDateString('pt-BR') : '—';
+      return `<div class="mitem st-${r.status}" onclick="verSolicitacao('${r.id}')">
+        <div class="mtxt"><strong>${r.nome || '—'}</strong><span>${r.fazenda || 'Sem fazenda informada'} · ${r.mun || ''}${r.uf ? '/' + r.uf : ''} · enviado em ${data} · ${(r.anexos || []).length} anexo(s)</span></div>
+        <span class="bdg ${cls}">${label}</span>
+      </div>`;
+    }).join('');
+  } catch (e) {
+    console.error(e);
+    wrap.innerHTML = '<div class="erow" style="padding:28px;text-align:center;color:var(--verm)">Erro ao carregar solicitações. Confira a configuração do Firebase.</div>';
+  }
+}
+
+function verSolicitacao(id) {
+  const r = _solicitacoesCache.find(x => x.id === id);
+  if (!r) return;
+  const [cls, label] = STATUS_BADGE[r.status] || STATUS_BADGE.pendente;
+  const anexosHTML = (r.anexos || []).length
+    ? `<div class="anexgrid">${r.anexos.map(a => `
+        <a class="anexit" href="${a.url}" target="_blank" rel="noopener">
+          ${a.tipo?.startsWith('image/') ? `<img src="${a.url}">` : `<div class="aicoW">📄</div>`}
+          <div class="anome">${a.nome}</div>
+        </a>`).join('')}</div>`
+    : '<p style="color:#9aab95;font-size:12.5px">Nenhum anexo enviado.</p>';
+
+  $('sol-detalhe').innerHTML = `
+    <div class="mtit">${r.nome || '—'} <span class="bdg ${cls}" style="margin-left:8px">${label}</span></div>
+    <div class="pcard"><div class="pcardtit">👤 Pessoal</div>
+      <div class="fgrid">
+        <div><strong>CPF/CNPJ:</strong> ${r.cpf || '—'}</div>
+        <div><strong>Nascimento:</strong> ${fmt.dt(r.nasc)}</div>
+        <div><strong>Telefone:</strong> ${r.tel || '—'}</div>
+        <div><strong>WhatsApp:</strong> ${r.whats || '—'}</div>
+        <div><strong>E-mail da conta:</strong> ${r.produtor_email || '—'}</div>
+      </div>
+    </div>
+    <div class="pcard"><div class="pcardtit">🌾 Propriedade</div>
+      <div class="fgrid">
+        <div><strong>Fazenda:</strong> ${r.fazenda || '—'}</div>
+        <div><strong>Município/UF:</strong> ${r.mun || '—'}/${r.uf || '—'}</div>
+        <div><strong>Área:</strong> ${r.ha ? r.ha + ' ha' : '—'}</div>
+        <div><strong>Cultura:</strong> ${r.cult || '—'}</div>
+        <div><strong>CAR:</strong> ${r.ncar || '—'}</div>
+      </div>
+    </div>
+    <div class="pcard"><div class="pcardtit">💰 Crédito</div>
+      <div class="fgrid">
+        <div><strong>Banco:</strong> ${r.banco || '—'}</div>
+        <div><strong>Linha:</strong> ${r.linha || '—'}</div>
+        <div><strong>Valor pretendido:</strong> ${fmt.brl(r.valcred)}</div>
+      </div>
+      ${r.obs ? `<p style="margin-top:8px;font-size:13px"><strong>Observações:</strong> ${r.obs}</p>` : ''}
+    </div>
+    <div class="pcard"><div class="pcardtit">📎 Fotos e Documentos</div>${anexosHTML}</div>
+    ${r.status === 'pendente' ? `
+      <div class="bgrp">
+        <button class="btn bg" onclick="aprovarSolicitacao('${r.id}')">✅ Aprovar e criar cliente</button>
+        <button class="btn bv" onclick="rejeitarSolicitacao('${r.id}')">❌ Rejeitar</button>
+        <button class="btn bo" onclick="closeModal('m-solicitacao')">Fechar</button>
+      </div>` : `<div class="bgrp"><button class="btn bo" onclick="closeModal('m-solicitacao')">Fechar</button></div>`}
+  `;
+  openModal('m-solicitacao');
+}
+
+async function aprovarSolicitacao(id) {
+  const r = _solicitacoesCache.find(x => x.id === id);
+  if (!r) return;
+  // Cria o cliente na Carteira usando os dados enviados pelo produtor.
+  Cli.create({
+    nome: r.nome, cpf_cnpj: r.cpf, email: r.produtor_email, nasc: r.nasc,
+    telefone: r.tel, whatsapp: r.whats,
+    fazenda: r.fazenda, municipio: r.mun, uf: r.uf, area_ha: r.ha,
+    cultura: r.cult, numero_car: r.ncar,
+    banco: r.banco, linha_credito: r.linha, valor_credito: r.valcred,
+    observacoes: (r.obs || '') + (r.anexos?.length ? `\n\nAnexos enviados pelo produtor:\n` + r.anexos.map(a => a.url).join('\n') : '')
+  });
+  try {
+    await fbDb.collection('solicitacoes').doc(id).update({ status: 'aprovado', aprovado_por: SES.email, aprovado_em: firebase.firestore.FieldValue.serverTimestamp() });
+    notify('✅ Cliente criado na Carteira e solicitação aprovada!');
+    closeModal('m-solicitacao');
+    renderSolicitacoes();
+  } catch (e) {
+    notify('Cliente criado, mas houve erro ao atualizar o status da solicitação.', 'err');
+  }
+}
+
+function rejeitarSolicitacao(id) {
+  confirm2('Rejeitar esta solicitação? O produtor não será notificado automaticamente.', async () => {
+    try {
+      await fbDb.collection('solicitacoes').doc(id).update({ status: 'rejeitado', rejeitado_por: SES.email, rejeitado_em: firebase.firestore.FieldValue.serverTimestamp() });
+      notify('Solicitação rejeitada.');
+      closeModal('m-solicitacao');
+      renderSolicitacoes();
+    } catch (e) {
+      notify('Erro ao rejeitar solicitação.', 'err');
+    }
+  });
+}
+
+const Prosp = {
+  all: () => DB.all(SES.uid, 'prospeccao'),
+  find: id => DB.find(SES.uid, 'prospeccao', id),
+  create: d => DB.insert(SES.uid, 'prospeccao', d),
+  update: (id, d) => DB.update(SES.uid, 'prospeccao', id, d),
+  remove: id => DB.remove(SES.uid, 'prospeccao', id)
+};
+
+const Cred = {
+  all: () => DB.all(SES.uid, 'operacoes'),
+  find: id => DB.find(SES.uid, 'operacoes', id),
+  create: d => DB.insert(SES.uid, 'operacoes', d),
+  update: (id, d) => DB.update(SES.uid, 'operacoes', id, d),
+  remove: id => DB.remove(SES.uid, 'operacoes', id)
+};
+
+const Amb = {
+  all: () => DB.all(SES.uid, 'projetos'),
+  find: id => DB.find(SES.uid, 'projetos', id),
+  create: d => DB.insert(SES.uid, 'projetos', d),
+  update: (id, d) => DB.update(SES.uid, 'projetos', id, d),
+  remove: id => DB.remove(SES.uid, 'projetos', id)
+};
+
+const Prop = {
+  all: () => DB.all(SES.uid, 'propostas'),
+  find: id => DB.find(SES.uid, 'propostas', id),
+  create: d => DB.insert(SES.uid, 'propostas', d),
+  update: (id, d) => DB.update(SES.uid, 'propostas', id, d),
+  remove: id => DB.remove(SES.uid, 'propostas', id)
+};
+
+// ============================================================
+// ALERTAS ENGINE
+// ============================================================
+function calcAlertas() {
+  const list = [];
+  Cli.all().forEach(c => {
+    if (c.data_nasc) {
+      const d = fmt.diasAniv(c.data_nasc);
+      if (d !== null && d <= 1)
+        list.push({ tipo: 'aniv', urg: d === 0, ico: '🎂',
+          titulo: (d === 0 ? 'Hoje' : 'Amanhã') + ' é aniversário de ' + c.nome,
+          sub: `📱 ${c.whatsapp || c.telefone || '—'} · ${c.cultura || ''} · ${c.municipio || ''}${c.uf ? '-'+c.uf : ''}`,
+          cliente: c });
+    }
+    if (c.venc_credito) {
+      const d = fmt.diasAte(c.venc_credito);
+      if (d !== null && d <= 90 && d >= 0)
+        list.push({ tipo: 'cred', urg: d < 30, ico: '💰',
+          titulo: `Crédito vence em ${d} dias — ${c.fazenda || c.nome}`,
+          sub: `${fmt.brl(c.valor_credito)} · ${c.linha_credito || ''} · ${c.banco || ''}`,
+          cliente: c });
+    }
+    if (c.venc_licenca) {
+      const d = fmt.diasAte(c.venc_licenca);
+      if (d !== null && d <= 180 && d >= 0)
+        list.push({ tipo: 'lic', urg: d < 60, ico: '🌿',
+          titulo: `Licença vence em ${d} dias — ${c.fazenda || c.nome}`,
+          sub: `${c.nome} · ${c.municipio || ''}${c.uf ? '-'+c.uf : ''}`,
+          cliente: c });
+    }
+  });
+  return list;
+}
+
+function alertHTML(a, acao) {
+  return `<div class="ait ${a.urg ? 'urg' : ''}">
+    <div class="aico">${a.ico}</div>
+    <div class="atxt"><strong>${a.titulo}</strong><span>${a.sub}</span></div>
+    <div class="aac">${acao}</div>
+  </div>`;
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function renderDashboard() {
+  const cl = Cli.all(), pr = Prosp.all(), cr = Cred.all(), am = Amb.all(), po = Prop.all();
+  const al = calcAlertas();
+  const hoje = new Date();
+  const mAtual = hoje.getMonth(), aAtual = hoje.getFullYear();
+  const novos = cl.filter(c => { const d = new Date(c._created); return d.getMonth() === mAtual && d.getFullYear() === aAtual; }).length;
+  const abertas = po.filter(p => p.status === 'Aberta' || p.status === 'Em negociação').length;
+  const fechadas = po.filter(p => p.status === 'Fechada').length;
+  const totalCred = cl.reduce((a, c) => a + Number(c.valor_credito || 0), 0);
+  const ambAtivos = am.filter(p => p.etapa !== 'Aprovação no Órgão').length;
+
+  $('dash-sub').textContent = `Atualizado agora · ${hoje.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}`;
+  $('hd-alert').textContent = al.length ? `🔔 ${al.length} alertas` : '';
+
+  $('dash-cards').innerHTML = `
+    <div class="cs"><div class="n">${cl.length}</div><div class="l">Clientes Ativos</div><div class="s">+${novos} esse mês</div></div>
+    <div class="cs am"><div class="n">${fmt.brl(totalCred)}</div><div class="l">Crédito em Carteira</div><div class="s">${cr.length} operações</div></div>
+    <div class="cs az"><div class="n">${am.length}</div><div class="l">Projetos Geo/Amb</div><div class="s">${ambAtivos} em andamento</div></div>
+    <div class="cs vr"><div class="n">${al.length}</div><div class="l">Alertas Ativos</div><div class="s">${al.filter(a => a.urg).length} urgentes</div></div>
+    <div class="cs"><div class="n">${fmt.brl(Cli.ticketMedio())}</div><div class="l">Ticket Médio c/ Crédito</div><div class="s">por cliente</div></div>
+    <div class="cs te"><div class="n">${abertas}</div><div class="l">Propostas Abertas</div><div class="s">${fechadas} fechadas</div></div>
+  `;
+
+  const dal = $('dash-alist');
+  if (!al.length) { dal.innerHTML = '<p style="color:#9aab95;font-style:italic;font-size:13px;padding:6px">Sem alertas no momento. 🎉</p>'; }
+  else dal.innerHTML = al.slice(0, 5).map(a =>
+    alertHTML(a, `<button class="btn bg bxs" onclick="navTo('alertas')">${a.tipo === 'aniv' ? 'Parabéns' : 'Ver'}</button>`)
+  ).join('');
+
+  // Funis
+  const fps = ['Lead','Contato Realizado','Reunião Agendada','Proposta Enviada','Cliente Fechado'];
+  const fpc = ['Documentação Solicitada','Projeto Elaborado','Protocolado no Banco','Aprovado / Liberado'];
+  const fpa = ['Orçamento Aprovado','Vistoria de Campo','Processamento de Dados','Entrega do Projeto','Aprovação no Órgão'];
+
+  function funil(lbl, data, etapas) {
+    const tot = data.length;
+    return `<div>
+      <div style="font-size:11px;font-weight:700;color:#4a6a54;margin-bottom:10px;text-transform:uppercase">${lbl} · ${tot}</div>
+      ${etapas.map(e => {
+        const n = data.filter(i => i.etapa === e).length;
+        const pct = tot ? Math.round(n / tot * 100) : 0;
+        return `<div style="margin-bottom:7px">
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:2px"><span>${e}</span><strong>${n}</strong></div>
+          <div class="pbar"><div class="pfill" style="width:${pct}%"></div></div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }
+
+  $('dash-funis').innerHTML =
+    funil('🎯 Prospecção', pr, fps) +
+    funil('💰 Crédito Rural', cr, fpc) +
+    funil('🌿 Ambiental & Geo', am, fpa);
+
+  // Propostas recentes
+  const recentes = po.sort((a,b) => b._created.localeCompare(a._created)).slice(0, 5);
+  const stBadge = { Aberta:'bb', 'Em negociação':'by', Fechada:'bg2', Perdida:'br' };
+  $('dash-propostas').innerHTML = recentes.length
+    ? `<div class="twrap"><table>
+        <thead><tr><th>Cliente</th><th>Serviço</th><th>Valor</th><th>Status</th><th>Data</th></tr></thead>
+        <tbody>${recentes.map(p => {
+          const c = Cli.find(p.cliente_id);
+          return `<tr>
+            <td>${c?.nome || '—'}</td>
+            <td>${p.servico || '—'}</td>
+            <td>${fmt.brl(p.valor)}</td>
+            <td><span class="bdg ${stBadge[p.status] || 'bc'}">${p.status}</span></td>
+            <td>${fmt.dt(p.data)}</td>
+          </tr>`;
+        }).join('')}</tbody>
+      </table></div>`
+    : '<p style="color:#9aab95;font-style:italic;font-size:13px">Nenhuma proposta cadastrada ainda.</p>';
+}
+
+// ============================================================
+// ALERTAS PAGE
+// ============================================================
+function renderAlertas() {
+  const al = calcAlertas();
+  const aniv = al.filter(a => a.tipo === 'aniv');
+  const cred = al.filter(a => a.tipo === 'cred');
+  const lic  = al.filter(a => a.tipo === 'lic');
+
+  const empty = '<p style="color:#9aab95;font-style:italic;font-size:13px;padding:6px">Nenhum alerta nesta categoria.</p>';
+
+  $('al-aniv').innerHTML = aniv.length
+    ? aniv.map(a => alertHTML(a, `<button class="btn bg bsm" onclick="copyMsg('${a.cliente.id}')">📋 Copiar Msg</button>`)).join('')
+    : empty;
+
+  $('al-cred').innerHTML = cred.length
+    ? cred.map(a => alertHTML(a, `<button class="btn bam bsm" onclick="openPropostaModal('${a.cliente.id}')">Nova Proposta</button>`)).join('')
+    : empty;
+
+  $('al-lic').innerHTML = lic.length
+    ? lic.map(a => alertHTML(a, `<button class="btn bo bsm">Agendar Renovação</button>`)).join('')
+    : empty;
+}
+
+function copyMsg(clienteId) {
+  const c = Cli.find(clienteId);
+  if (!c) return;
+  const msg = `🌾 Olá, ${c.nome.split(' ')[0]}! Tudo bem?\n\nA equipe da AgroConsult deseja a você um Feliz Aniversário! 🎂🥳\n\nQue este novo ciclo traga muita saúde, prosperidade e excelentes colheitas! 🌱\n\nConte sempre conosco!`;
+  navigator.clipboard?.writeText(msg).then(() => notify('Mensagem copiada! Cole no WhatsApp 😊'))
+    || (() => { const t = document.createElement('textarea'); t.value = msg; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); notify('Mensagem copiada!'); })();
+}
+
+// ============================================================
+// CLIENTES — CRUD completo
+// ============================================================
+function renderClientes() {
+  const busca = ($('s-cli')?.value || '').toLowerCase();
+  const fcar  = $('f-car')?.value || '';
+  const fuf   = $('f-uf')?.value || '';
+  let lista = Cli.all();
+  if (busca) lista = lista.filter(c => [c.nome,c.fazenda,c.municipio,c.cpf_cnpj,c.email].join(' ').toLowerCase().includes(busca));
+  if (fcar)  lista = lista.filter(c => c.status_car === fcar);
+  if (fuf)   lista = lista.filter(c => c.uf === fuf);
+
+  const todos = Cli.all();
+  const tc = todos.reduce((a,c) => a + Number(c.valor_credito||0), 0);
+  const med = todos.filter(c=>c.valor_credito).length
+    ? tc / todos.filter(c=>c.valor_credito).length : 0;
+
+  $('ticket-box').innerHTML = `
+    <div class="ti"><div class="tl">Clientes</div><div class="tv">${todos.length}</div></div>
+    <div class="ti"><div class="tl">Encontrados</div><div class="tv">${lista.length}</div></div>
+    <div class="ti"><div class="tl">Total Crédito</div><div class="tv">${fmt.brl(tc)}</div></div>
+    <div class="ti"><div class="tl">Ticket Médio</div><div class="tv">${fmt.brl(med)}</div></div>
+  `;
+
+  const carBadge = { Aprovado:'bg2', 'Em análise':'by', Cadastrado:'bb', 'Não iniciado':'bc', Pendente:'br' };
+  const tbody = $('tb-clientes');
+  if (!lista.length) {
+    tbody.innerHTML = '<tr class="erow"><td colspan="9">Nenhum cliente encontrado. Clique em "+ Novo Cliente" para começar.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = lista.map(c => {
+    const dc = fmt.diasAte(c.venc_credito);
+    const credBadge = !c.banco ? '<span class="bdg bc">Sem crédito</span>'
+      : dc !== null && dc <= 90 ? `<span class="bdg by">Vence ${dc}d</span>`
+      : '<span class="bdg bg2">Regular</span>';
+    return `<tr>
+      <td>
+        <span class="lnk" onclick="openPerfil('${c.id}')">${c.nome}</span>
+        ${c.cpf_cnpj ? `<br><small style="color:#9aab95">${c.cpf_cnpj}</small>` : ''}
+      </td>
+      <td>${c.fazenda || '—'}</td>
+      <td>${c.municipio || '—'}${c.uf ? '-'+c.uf : ''}</td>
+      <td>${c.hectares ? c.hectares+' ha' : '—'}</td>
+      <td>${c.cultura || '—'}</td>
+      <td><span class="bdg ${carBadge[c.status_car] || 'bc'}">${c.status_car || '—'}</span></td>
+      <td>${credBadge}</td>
+      <td>${c.valor_credito ? fmt.brl(c.valor_credito) : '—'}</td>
+      <td style="white-space:nowrap">
+        <button class="btn bo bxs" onclick="openPerfil('${c.id}')">👁</button>
+        <button class="btn bo bxs" onclick="editCliente('${c.id}')">✏️</button>
+        <button class="btn bv bxs" onclick="deleteCliente('${c.id}')">🗑</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function clearClienteForm() {
+  ['mc-nome','mc-cpf','mc-nasc','mc-email','mc-tel','mc-whats',
+   'mc-fazenda','mc-mun','mc-ha','mc-cult2','mc-mat','mc-ncar',
+   'mc-valcred','mc-dtlib','mc-venc','mc-numcont',
+   'mc-dtvistoria','mc-dtlic','mc-venclic','mc-obs'].forEach(id => { const el = $(id); if(el) el.value = ''; });
+  ['mc-uf','mc-cult','mc-scar','mc-banco','mc-linha','mc-tipogeo','mc-sgeo'].forEach(id => {
+    const el = $(id); if(el) el.selectedIndex = 0;
+  });
+  clearErrors('m-cliente');
+  $('m-cliente').querySelector('.tab.on')?.classList.remove('on');
+  $('m-cliente').querySelector('.tab')?.classList.add('on');
+  $('m-cliente').querySelector('.tc.on')?.classList.remove('on');
+  $('m-cliente').querySelector('.tc')?.classList.add('on');
+}
+
+function openClienteModal(preId = null) {
+  clearClienteForm();
+  $('mc-id').value = '';
+  $('mc-tit').textContent = 'Novo Cliente';
+  openModal('m-cliente');
+}
+
+function editCliente(id) {
+  const c = Cli.find(id); if (!c) return;
+  clearClienteForm();
+  $('mc-id').value = id;
+  $('mc-tit').textContent = 'Editar Cliente — ' + c.nome;
+  const map = {
+    nome:'mc-nome', cpf_cnpj:'mc-cpf', data_nasc:'mc-nasc', email:'mc-email',
+    telefone:'mc-tel', whatsapp:'mc-whats', fazenda:'mc-fazenda', municipio:'mc-mun',
+    uf:'mc-uf', hectares:'mc-ha', cultura:'mc-cult', cultura2:'mc-cult2',
+    matricula:'mc-mat', num_car:'mc-ncar', status_car:'mc-scar',
+    banco:'mc-banco', linha_credito:'mc-linha', valor_credito:'mc-valcred',
+    dt_liberacao:'mc-dtlib', venc_credito:'mc-venc', num_contrato:'mc-numcont',
+    tipo_geo:'mc-tipogeo', status_geo:'mc-sgeo',
+    dt_vistoria:'mc-dtvistoria', dt_licenca:'mc-dtlic', venc_licenca:'mc-venclic',
+    obs:'mc-obs'
+  };
+  Object.entries(map).forEach(([k, id_]) => { const el = $(id_); if(el && c[k] !== undefined) el.value = c[k] || ''; });
+  openModal('m-cliente');
+}
+
+function saveCliente() {
+  const id = $('mc-id').value;
+  const d = {
+    nome: $('mc-nome').value.trim(), cpf_cnpj: $('mc-cpf').value.trim(),
+    data_nasc: $('mc-nasc').value, email: $('mc-email').value.trim(),
+    telefone: $('mc-tel').value.trim(), whatsapp: $('mc-whats').value.trim(),
+    fazenda: $('mc-fazenda').value.trim(), municipio: $('mc-mun').value.trim(),
+    uf: $('mc-uf').value, hectares: $('mc-ha').value,
+    cultura: $('mc-cult').value, cultura2: $('mc-cult2').value.trim(),
+    matricula: $('mc-mat').value.trim(), num_car: $('mc-ncar').value.trim(),
+    status_car: $('mc-scar').value,
+    banco: $('mc-banco').value, linha_credito: $('mc-linha').value,
+    valor_credito: $('mc-valcred').value, dt_liberacao: $('mc-dtlib').value,
+    venc_credito: $('mc-venc').value, num_contrato: $('mc-numcont').value.trim(),
+    tipo_geo: $('mc-tipogeo').value, status_geo: $('mc-sgeo').value,
+    dt_vistoria: $('mc-dtvistoria').value, dt_licenca: $('mc-dtlic').value,
+    venc_licenca: $('mc-venclic').value, obs: $('mc-obs').value.trim()
+  };
+
+  const errs = Cli.validate(d, id || null);
+  clearErrors('m-cliente');
+  if (Object.keys(errs).length) {
+    if (errs.nome) { $('fg-mc-nome').classList.add('err'); }
+    if (errs.cpf)  { $('fg-mc-cpf').classList.add('err'); $('fg-mc-cpf').querySelector('.ferr').textContent = errs.cpf; }
+    if (errs.email){ $('fg-mc-email').classList.add('err'); $('fg-mc-email').querySelector('.ferr').textContent = errs.email; }
+    notify('Corrija os campos destacados', 'err');
+    return;
+  }
+
+  if (id) { Cli.update(id, d); notify('Cliente atualizado! ✅'); }
+  else { Cli.create(d); notify('Cliente cadastrado! ✅'); }
+  closeModal('m-cliente');
+  renderClientes();
+}
+
+function deleteCliente(id) {
+  const c = Cli.find(id);
+  confirm2(`Excluir o cliente "${c?.nome}"? Todos os dados relacionados serão removidos.`, () => {
+    Cli.remove(id);
+    notify('Cliente excluído.');
+    renderClientes();
+  });
+}
+
+// ============================================================
+// PERFIL
+// ============================================================
+function openPerfil(id) {
+  const c = Cli.find(id); if (!c) return;
+  const dc = fmt.diasAte(c.venc_credito);
+  const dl = fmt.diasAte(c.venc_licenca);
+  const props = Prop.all().filter(p => p.cliente_id === id);
+  const crs = Cred.all().filter(x => x.cliente_id === id);
+  const ams = Amb.all().filter(x => x.cliente_id === id);
+
+  $('perfil-body').innerHTML = `
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px">
+      <div style="width:54px;height:54px;border-radius:50%;background:var(--g4);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0">🧑‍🌾</div>
+      <div style="flex:1">
+        <div style="font-size:19px;font-weight:700;color:var(--g1)">${c.nome}</div>
+        <div style="font-size:12px;color:#6b7c6a">${c.cpf_cnpj||''} · ${c.fazenda||''} · ${c.municipio||''}${c.uf?'-'+c.uf:''}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:10px;color:#4a6a54;font-weight:700;text-transform:uppercase">Crédito Total</div>
+        <div style="font-size:20px;font-weight:700;color:var(--g1)">${fmt.brl(c.valor_credito)}</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+      <div class="pcard">
+        <div class="pcardtit">👤 Dados Pessoais</div>
+        ${c.data_nasc ? `<div style="font-size:13px;margin-bottom:4px">🎂 ${fmt.dt(c.data_nasc)}</div>` : ''}
+        ${c.email ? `<div style="font-size:13px;margin-bottom:4px">📧 ${c.email}</div>` : ''}
+        ${c.telefone ? `<div style="font-size:13px;margin-bottom:4px">📞 ${c.telefone}</div>` : ''}
+        ${c.whatsapp ? `<div style="font-size:13px">💬 ${c.whatsapp}</div>` : ''}
+      </div>
+      <div class="pcard">
+        <div class="pcardtit">🌾 Propriedade</div>
+        ${c.hectares ? `<div style="font-size:13px;margin-bottom:4px">📐 ${c.hectares} ha</div>` : ''}
+        ${c.cultura ? `<div style="font-size:13px;margin-bottom:4px">🌱 ${c.cultura}</div>` : ''}
+        ${c.matricula ? `<div style="font-size:13px;margin-bottom:4px">📋 Matr.: ${c.matricula}</div>` : ''}
+        <div style="font-size:13px">🌿 CAR: <span class="bdg ${c.status_car==='Aprovado'?'bg2':'by'}">${c.status_car||'—'}</span></div>
+        ${c.num_car ? `<div style="font-size:11px;color:#9aab95;margin-top:2px">${c.num_car}</div>` : ''}
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+      <div class="pcard">
+        <div class="pcardtit">💰 Crédito Rural</div>
+        <div style="font-size:13px;margin-bottom:4px">🏦 ${c.banco||'Sem crédito'}</div>
+        ${c.linha_credito ? `<div style="font-size:13px;margin-bottom:4px">📄 ${c.linha_credito}</div>` : ''}
+        <div style="font-size:13px;margin-bottom:4px">💵 ${fmt.brl(c.valor_credito)}</div>
+        ${c.venc_credito ? `<div style="font-size:13px">⏰ Vence: <strong>${fmt.dt(c.venc_credito)}</strong>${dc!==null&&dc<=90?` <span class="bdg by">${dc}d</span>`:''}</div>` : ''}
+      </div>
+      <div class="pcard">
+        <div class="pcardtit">🌿 Ambiental & Geo</div>
+        <div style="font-size:13px;margin-bottom:4px">${c.tipo_geo||'Nenhum serviço cadastrado'}</div>
+        ${c.status_geo ? `<span class="bdg bb">${c.status_geo}</span>` : ''}
+        ${c.venc_licenca ? `<div style="font-size:13px;margin-top:6px">📋 Lic. vence: <strong>${fmt.dt(c.venc_licenca)}</strong>${dl!==null&&dl<=180?` <span class="bdg by">${dl}d</span>`:''}</div>` : ''}
+      </div>
+    </div>
+    ${props.length ? `<div class="pcard"><div class="pcardtit">📄 Propostas (${props.length})</div>
+      ${props.slice(0,3).map(p=>`<div style="font-size:13px;margin-bottom:4px;display:flex;justify-content:space-between"><span>${p.servico||'—'}</span><span>${fmt.brl(p.valor)} <span class="bdg bc" style="font-size:10px">${p.status}</span></span></div>`).join('')}
+    </div>` : ''}
+    ${c.obs ? `<div class="pcard"><div class="pcardtit">📝 Observações</div><p style="font-size:13px;color:#555;line-height:1.5">${c.obs}</p></div>` : ''}
+    <div class="bgrp">
+      <button class="btn bg bsm" onclick="closeModal('m-perfil');editCliente('${c.id}')">✏️ Editar</button>
+      ${c.whatsapp ? `<button class="btn bo bsm" onclick="window.open('https://wa.me/55'+('${c.whatsapp}'.replace(/\\D/g,'')),'_blank')">💬 WhatsApp</button>` : ''}
+      <button class="btn bo bsm" onclick="closeModal('m-perfil');openPropostaModal('${c.id}')">📄 Nova Proposta</button>
+    </div>
+  `;
+  openModal('m-perfil');
+}
+
+// ============================================================
+// KANBAN HELPER
+// ============================================================
+function renderKanban(containerId, items, etapas, cardFn, colorFn) {
+  $(containerId).innerHTML = etapas.map(etapa => {
+    const cards = items.filter(i => i.etapa === etapa);
+    return `<div class="kcol">
+      <div class="kctit" style="border-bottom-color:${colorFn(etapa)}">
+        ${etapa} <span class="bdg bc" style="font-size:10px">${cards.length}</span>
+      </div>
+      ${cards.length ? cards.map(i => cardFn(i)).join('') : '<div class="kempty">Vazio</div>'}
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+// FUNIL: PROSPECÇÃO
+// ============================================================
+const ETAPAS_PROSP = ['Lead','Contato Realizado','Reunião Agendada','Proposta Enviada','Cliente Fechado'];
+
+function renderFunilProsp() {
+  const items = Prosp.all();
+  const total = items.reduce((a, i) => a + Number(i.potencial||0), 0);
+  $('prosp-resumo').innerHTML = `
+    <div class="ti"><div class="tl">Total Pipeline</div><div class="tv" style="font-size:16px">${fmt.brl(total)}</div></div>
+    <div class="ti"><div class="tl">Leads</div><div class="tv" style="font-size:16px">${items.length}</div></div>
+  `;
+  const cores = { Lead:'#9aab95', 'Contato Realizado':'-'+'#f4a261', 'Reunião Agendada':'#457b9d', 'Proposta Enviada':'#a0522d', 'Cliente Fechado':'#52b788' };
+  renderKanban('kb-prosp', items, ETAPAS_PROSP, i => `
+    <div class="kcard am">
+      <div class="kcacts">
+        <button class="btn bo bxs" onclick="editProsp('${i.id}')">✏️</button>
+        <button class="btn bv bxs" onclick="delProsp('${i.id}')">🗑</button>
+      </div>
+      <div class="kcnome">${i.nome}</div>
+      <div class="kcinfo">📍 ${i.municipio||'—'} · ${i.interesse||'—'}</div>
+      ${i.origem ? `<div class="kcinfo">📌 ${i.origem}</div>` : ''}
+      ${i.potencial ? `<div class="kcval">Potencial: ${fmt.brl(i.potencial)}</div>` : ''}
+      ${i.obs ? `<div style="font-size:11px;color:#9aab95;margin-top:4px">${i.obs.slice(0,55)}${i.obs.length>55?'...':''}</div>` : ''}
+    </div>`, e => cores[e]||'#52b788');
+}
+
+function openProspModal(preId = null) {
+  ['mp-id','mp-nome','mp-tel','mp-mun','mp-obs'].forEach(id => { const el=$(id);if(el)el.value=''; });
+  $('mp-pot').value = '';
+  clearErrors('m-prosp');
+  $('mp-tit').textContent = 'Novo Lead';
+  $('mp-id').value = '';
+  openModal('m-prosp');
+}
+
+function editProsp(id) {
+  const i = Prosp.find(id); if (!i) return;
+  $('mp-id').value = id;
+  $('mp-tit').textContent = 'Editar Lead';
+  $('mp-nome').value = i.nome||'';
+  $('mp-tel').value = i.telefone||'';
+  $('mp-mun').value = i.municipio||'';
+  $('mp-orig').value = i.origem||'Indicação';
+  $('mp-int').value = i.interesse||'Crédito Rural';
+  $('mp-etapa').value = i.etapa||'Lead';
+  $('mp-pot').value = i.potencial||'';
+  $('mp-obs').value = i.obs||'';
+  clearErrors('m-prosp');
+  openModal('m-prosp');
+}
+
+function saveProsp() {
+  const nome = $('mp-nome').value.trim();
+  if (!nome) { $('fg-mp-nome').classList.add('err'); notify('Nome obrigatório','err'); return; }
+  $('fg-mp-nome').classList.remove('err');
+  const id = $('mp-id').value;
+  const d = { nome, telefone:$('mp-tel').value, municipio:$('mp-mun').value,
+    origem:$('mp-orig').value, interesse:$('mp-int').value, etapa:$('mp-etapa').value,
+    potencial:$('mp-pot').value, obs:$('mp-obs').value };
+  if (id) Prosp.update(id, d); else Prosp.create(d);
+  closeModal('m-prosp'); renderFunilProsp(); notify('Lead salvo! ✅');
+}
+
+function delProsp(id) {
+  const i = Prosp.find(id);
+  confirm2(`Excluir o lead "${i?.nome}"?`, () => { Prosp.remove(id); renderFunilProsp(); notify('Lead excluído.'); });
+}
+
+// ============================================================
+// FUNIL: CRÉDITO RURAL
+// ============================================================
+const ETAPAS_CRED = ['Documentação Solicitada','Projeto Elaborado','Protocolado no Banco','Aprovado / Liberado'];
+
+function renderFunilCredito() {
+  const items = Cred.all();
+  const clientes = Cli.all();
+  const total = items.reduce((a, i) => a + Number(i.valor||0), 0);
+  $('cred-resumo').innerHTML = `
+    <div class="ti"><div class="tl">Volume Total</div><div class="tv" style="font-size:16px">${fmt.brl(total)}</div></div>
+    <div class="ti"><div class="tl">Operações</div><div class="tv" style="font-size:16px">${items.length}</div></div>
+  `;
+  const cores = { 'Documentação Solicitada':'#f4a261','Projeto Elaborado':'#457b9d','Protocolado no Banco':'#a0522d','Aprovado / Liberado':'#52b788' };
+  renderKanban('kb-cred', items, ETAPAS_CRED, i => {
+    const c = clientes.find(cl => cl.id === i.cliente_id);
+    return `<div class="kcard am">
+      <div class="kcacts">
+        <button class="btn bo bxs" onclick="editCredito('${i.id}')">✏️</button>
+        <button class="btn bv bxs" onclick="delCredito('${i.id}')">🗑</button>
+      </div>
+      <div class="kcnome">${c?.fazenda || c?.nome || '—'}</div>
+      <div class="kcinfo">🏦 ${i.banco||'—'} · ${i.linha||'—'}</div>
+      ${i.venc ? `<div class="kcinfo">⏰ Venc: ${fmt.dt(i.venc)}</div>` : ''}
+      <div class="kcval">${fmt.brl(i.valor)}</div>
+    </div>`;
+  }, e => cores[e]||'#52b788');
+}
+
+function populateCli(selId, selected='') {
+  const sel = $(selId); if(!sel) return;
+  sel.innerHTML = '<option value="">Selecione o cliente...</option>' +
+    Cli.all().map(c => `<option value="${c.id}"${c.id===selected?' selected':''}>${c.nome}${c.fazenda?' — '+c.fazenda:''}</option>`).join('');
+}
+
+function openCreditoModal() {
+  populateCli('mcr-cli');
+  ['mcr-id','mcr-obs'].forEach(id=>{const el=$(id);if(el)el.value='';});
+  $('mcr-val').value=''; $('mcr-venc').value='';
+  $('mcr-tit').textContent='Nova Operação de Crédito';
+  clearErrors('m-credito');
+  openModal('m-credito');
+}
+
+function editCredito(id) {
+  const i = Cred.find(id); if(!i) return;
+  populateCli('mcr-cli', i.cliente_id);
+  $('mcr-id').value=id; $('mcr-banco').value=i.banco||'Banco do Brasil';
+  $('mcr-linha').value=i.linha||'Pronaf'; $('mcr-val').value=i.valor||'';
+  $('mcr-etapa').value=i.etapa||ETAPAS_CRED[0]; $('mcr-venc').value=i.venc||'';
+  $('mcr-obs').value=i.obs||'';
+  $('mcr-tit').textContent='Editar Operação';
+  clearErrors('m-credito');
+  openModal('m-credito');
+}
+
+function saveCredito() {
+  const cliId=$('mcr-cli').value, val=$('mcr-val').value;
+  clearErrors('m-credito');
+  let ok=true;
+  if(!cliId){$('fg-mcr-cli').classList.add('err');ok=false;}
+  if(!val){$('fg-mcr-val').classList.add('err');ok=false;}
+  if(!ok){notify('Preencha os campos obrigatórios','err');return;}
+  const id=$('mcr-id').value;
+  const d={cliente_id:cliId,banco:$('mcr-banco').value,linha:$('mcr-linha').value,
+    valor:val,etapa:$('mcr-etapa').value,venc:$('mcr-venc').value,obs:$('mcr-obs').value};
+  if(id) Cred.update(id,d); else Cred.create(d);
+  closeModal('m-credito'); renderFunilCredito(); notify('Operação salva! ✅');
+}
+
+function delCredito(id) {
+  confirm2('Excluir esta operação de crédito?', ()=>{Cred.remove(id);renderFunilCredito();notify('Excluído.');});
+}
+
+// ============================================================
+// FUNIL: AMBIENTAL & GEO
+// ============================================================
+const ETAPAS_AMB = ['Orçamento Aprovado','Vistoria de Campo','Processamento de Dados','Entrega do Projeto','Aprovação no Órgão'];
+
+function renderFunilAmb() {
+  const items = Amb.all();
+  const clientes = Cli.all();
+  const total = items.reduce((a,i)=>a+Number(i.valor||0),0);
+  $('amb-resumo').innerHTML = `
+    <div class="ti"><div class="tl">Projetos</div><div class="tv" style="font-size:16px">${items.length}</div></div>
+    <div class="ti"><div class="tl">Volume Total</div><div class="tv" style="font-size:16px">${fmt.brl(total)}</div></div>
+  `;
+  const cores={'Orçamento Aprovado':'#457b9d','Vistoria de Campo':'#f4a261','Processamento de Dados':'#a0522d','Entrega do Projeto':'#2d6a4f','Aprovação no Órgão':'#52b788'};
+  renderKanban('kb-amb', items, ETAPAS_AMB, i => {
+    const c = clientes.find(cl=>cl.id===i.cliente_id);
+    return `<div class="kcard az">
+      <div class="kcacts">
+        <button class="btn bo bxs" onclick="editAmb('${i.id}')">✏️</button>
+        <button class="btn bv bxs" onclick="delAmb('${i.id}')">🗑</button>
+      </div>
+      <div class="kcnome">${i.tipo||'—'}</div>
+      <div class="kcinfo">${c?.fazenda||c?.nome||'—'}${c?.hectares?' · '+c.hectares+' ha':''}</div>
+      ${i.vistoria?`<div class="kcinfo">📅 Vistoria: ${fmt.dt(i.vistoria)}</div>`:''}
+      ${i.valor?`<div class="kcval">${fmt.brl(i.valor)}</div>`:''}
+    </div>`;
+  }, e=>cores[e]||'#52b788');
+}
+
+function openAmbModal() {
+  populateCli('ma-cli');
+  ['ma-id','ma-obs'].forEach(id=>{const el=$(id);if(el)el.value='';});
+  $('ma-val').value=''; $('ma-vist').value=''; $('ma-venclic').value='';
+  $('ma-tit').textContent='Novo Projeto';
+  clearErrors('m-ambiental');
+  openModal('m-ambiental');
+}
+
+function editAmb(id) {
+  const i=Amb.find(id); if(!i) return;
+  populateCli('ma-cli',i.cliente_id);
+  $('ma-id').value=id; $('ma-tipo').value=i.tipo||'CAR';
+  $('ma-etapa').value=i.etapa||ETAPAS_AMB[0]; $('ma-val').value=i.valor||'';
+  $('ma-vist').value=i.vistoria||''; $('ma-venclic').value=i.venc_licenca||'';
+  $('ma-obs').value=i.obs||'';
+  $('ma-tit').textContent='Editar Projeto';
+  clearErrors('m-ambiental');
+  openModal('m-ambiental');
+}
+
+function saveAmbiental() {
+  const cliId=$('ma-cli').value;
+  clearErrors('m-ambiental');
+  if(!cliId){$('fg-ma-cli').classList.add('err');notify('Selecione um cliente','err');return;}
+  const id=$('ma-id').value;
+  const d={cliente_id:cliId,tipo:$('ma-tipo').value,etapa:$('ma-etapa').value,
+    valor:$('ma-val').value,vistoria:$('ma-vist').value,
+    venc_licenca:$('ma-venclic').value,obs:$('ma-obs').value};
+  if(id) Amb.update(id,d); else Amb.create(d);
+  closeModal('m-ambiental'); renderFunilAmb(); notify('Projeto salvo! ✅');
+}
+
+function delAmb(id) {
+  confirm2('Excluir este projeto?',()=>{Amb.remove(id);renderFunilAmb();notify('Excluído.');});
+}
+
+// ============================================================
+// PROPOSTAS
+// ============================================================
+function renderPropostas() {
+  const busca=($('s-prop')?.value||'').toLowerCase();
+  const fst=$('f-prop-st')?.value||'';
+  const clientes=Cli.all();
+  let lista=Prop.all();
+  if(fst) lista=lista.filter(p=>p.status===fst);
+  if(busca) lista=lista.filter(p=>{
+    const c=clientes.find(cl=>cl.id===p.cliente_id);
+    return [c?.nome,p.servico,p.descricao].join(' ').toLowerCase().includes(busca);
+  });
+  lista.sort((a,b)=>b._created.localeCompare(a._created));
+
+  const total=lista.reduce((a,p)=>a+Number(p.valor||0),0);
+  const abertas=lista.filter(p=>p.status==='Aberta'||p.status==='Em negociação');
+  const fechadas=lista.filter(p=>p.status==='Fechada');
+  $('prop-totais').innerHTML=`
+    <div class="ti"><div class="tl">Volume Total</div><div class="tv">${fmt.brl(total)}</div></div>
+    <div class="ti"><div class="tl">Abertas</div><div class="tv">${abertas.length}</div></div>
+    <div class="ti"><div class="tl">Fechadas</div><div class="tv">${fechadas.length}</div></div>
+    <div class="ti"><div class="tl">Total Registros</div><div class="tv">${lista.length}</div></div>
+  `;
+
+  const stb={Aberta:'bb','Em negociação':'by',Fechada:'bg2',Perdida:'br'};
+  const tb=$('tb-propostas');
+  if(!lista.length){tb.innerHTML='<tr class="erow"><td colspan="7">Nenhuma proposta encontrada.</td></tr>';return;}
+  tb.innerHTML=lista.map(p=>{
+    const c=clientes.find(cl=>cl.id===p.cliente_id);
+    return `<tr>
+      <td><span class="lnk" onclick="openPerfil('${c?.id}')">${c?.nome||'—'}</span></td>
+      <td>${p.servico||'—'}</td>
+      <td>${fmt.brl(p.valor)}</td>
+      <td><span class="bdg ${stb[p.status]||'bc'}">${p.status||'—'}</span></td>
+      <td>${fmt.dt(p.data)}</td>
+      <td>${p.responsavel||SES.nome}</td>
+      <td style="white-space:nowrap">
+        <button class="btn bo bxs" onclick="editProposta('${p.id}')">✏️</button>
+        <button class="btn bv bxs" onclick="delProposta('${p.id}')">🗑</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function openPropostaModal(preCliId='') {
+  populateCli('mpr-cli', preCliId);
+  ['mpr-id','mpr-desc'].forEach(id=>{const el=$(id);if(el)el.value='';});
+  $('mpr-val').value=''; $('mpr-data').value=fmt.hoje();
+  $('mpr-tit').textContent='Nova Proposta';
+  clearErrors('m-proposta');
+  openModal('m-proposta');
+}
+
+function editProposta(id) {
+  const p=Prop.find(id); if(!p) return;
+  populateCli('mpr-cli',p.cliente_id);
+  $('mpr-id').value=id; $('mpr-serv').value=p.servico||'Crédito Rural';
+  $('mpr-val').value=p.valor||''; $('mpr-status').value=p.status||'Aberta';
+  $('mpr-data').value=p.data||''; $('mpr-desc').value=p.descricao||'';
+  $('mpr-tit').textContent='Editar Proposta';
+  clearErrors('m-proposta');
+  openModal('m-proposta');
+}
+
+function saveProposta() {
+  const cliId=$('mpr-cli').value, val=$('mpr-val').value;
+  clearErrors('m-proposta');
+  let ok=true;
+  if(!cliId){$('fg-mpr-cli').classList.add('err');ok=false;}
+  if(!val){$('fg-mpr-val').classList.add('err');ok=false;}
+  if(!ok){notify('Preencha os campos obrigatórios','err');return;}
+  const id=$('mpr-id').value;
+  const d={cliente_id:cliId,servico:$('mpr-serv').value,valor:val,
+    status:$('mpr-status').value,data:$('mpr-data').value,
+    descricao:$('mpr-desc').value,responsavel:SES.nome};
+  if(id) Prop.update(id,d); else Prop.create(d);
+  closeModal('m-proposta'); renderPropostas(); notify('Proposta salva! ✅');
+}
+
+function delProposta(id) {
+  confirm2('Excluir esta proposta?',()=>{Prop.remove(id);renderPropostas();notify('Excluído.');});
+}
+
+// ============================================================
+// IMPORTAR CSV
+// ============================================================
+function parseCSV(input) {
+  const file=input.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const raw=e.target.result;
+    const sep=raw.indexOf(';')>-1?';':',';
+    const linhas=raw.split(/\r?\n/).map(l=>l.trim()).filter(l=>l);
+    const headers=linhas[0].split(sep).map(h=>h.trim().replace(/["']/g,'').toLowerCase());
+    _pendImport=linhas.slice(1).filter(l=>l).map(l=>{
+      const vals=l.split(sep).map(v=>v.trim().replace(/["']/g,''));
+      const o={}; headers.forEach((h,i)=>o[h]=vals[i]||'');
+      return{
+        nome:o.nome||'',cpf_cnpj:o.cpf_cnpj||o.cpf||o.cnpj||'',
+        data_nasc:o.data_nasc||o.nascimento||'',email:o.email||'',
+        telefone:o.telefone||o.fone||o.tel||'',
+        whatsapp:o.whatsapp||o.whats||o.telefone||'',
+        fazenda:o.fazenda||'',municipio:o.municipio||o.cidade||'',uf:o.uf||o.estado||'',
+        hectares:o.hectares||o.area||o.ha||'',cultura:o.cultura||'',
+        matricula:o.matricula||'',status_car:o.status_car||'',num_car:o.num_car||'',
+        banco:o.banco||'',linha_credito:o.linha_credito||o.linha||'',
+        valor_credito:o.valor_credito||o.valor||'',venc_credito:o.venc_credito||'',
+        status_geo:o.status_geo||'',venc_licenca:o.venc_licenca||'',obs:o.obs||''
+      };
+    }).filter(o=>o.nome);
+
+    const prev=$('import-prev');
+    prev.style.display='block';
+    $('import-prev-content').innerHTML=`
+      <p style="margin-bottom:10px;color:var(--g2);font-weight:600">
+        ✅ ${_pendImport.length} clientes encontrados em "${file.name}"
+      </p>
+      <div class="twrap"><table>
+        <thead><tr><th>Nome</th><th>CPF/CNPJ</th><th>E-mail</th><th>Fazenda</th><th>UF</th><th>Crédito</th></tr></thead>
+        <tbody>${_pendImport.slice(0,8).map(c=>`<tr>
+          <td>${c.nome}</td><td>${c.cpf_cnpj}</td><td>${c.email}</td>
+          <td>${c.fazenda}</td><td>${c.uf}</td><td>${fmt.brl(c.valor_credito)}</td>
+        </tr>`).join('')}</tbody>
+      </table></div>
+      ${_pendImport.length>8?`<p style="font-size:12px;color:#9aab95;margin-top:6px">... e mais ${_pendImport.length-8} registros</p>`:''}
+    `;
+    $('btn-confirm-import').onclick=confirmImport;
+  };
+  reader.readAsText(file,'UTF-8');
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  $('drop-zone').style.borderColor='var(--bd)';
+  const file=e.dataTransfer.files[0];
+  if(file){
+    const dt=new DataTransfer(); dt.items.add(file);
+    $('finput').files=dt.files; parseCSV($('finput'));
+  }
+}
+
+function confirmImport() {
+  let novos=0, skip=0;
+  _pendImport.forEach(c=>{
+    if(!c.nome){skip++;return;}
+    const erros=Cli.validate(c);
+    if(erros.cpf||erros.email){
+      // Importa mesmo assim removendo duplicado de CPF se necessário
+      const d={...c}; if(erros.cpf) d.cpf_cnpj='';
+      if(erros.email) d.email='';
+      if(d.nome){Cli.create(d);novos++;}else skip++;
+    } else {
+      Cli.create(c); novos++;
+    }
+  });
+  _pendImport=[];
+  $('import-prev').style.display='none';
+  $('finput').value='';
+  notify(`✅ ${novos} clientes importados${skip?` · ${skip} ignorados`:''}`, 'ok', 5000);
+  if(novos) navTo('clientes');
+}
+
+function cancelImport() {
+  _pendImport=[];
+  $('import-prev').style.display='none';
+  $('finput').value='';
+}
+
+function quickAdd() {
+  const nome=$('q-nome').value.trim(), cpf=$('q-cpf').value.trim(), email=$('q-email').value.trim();
+  document.querySelectorAll('#ti-quick .fg.err').forEach(f=>f.classList.remove('err'));
+  let ok=true;
+  if(!nome){$('qfg-nome').classList.add('err');ok=false;}
+  if(!cpf){$('qfg-cpf').classList.add('err');ok=false;}
+  if(!email){$('qfg-email').classList.add('err');ok=false;}
+  if(!ok){notify('Preencha os campos obrigatórios','err');return;}
+  const d={nome,cpf_cnpj:cpf,email,data_nasc:$('q-nasc').value,
+    telefone:$('q-tel').value,whatsapp:$('q-tel').value,
+    fazenda:$('q-fazenda').value,municipio:$('q-mun').value,
+    uf:$('q-uf').value,hectares:$('q-ha').value,cultura:$('q-cult').value};
+  const erros=Cli.validate(d);
+  if(erros.cpf){$('qfg-cpf').classList.add('err');$('qfg-cpf').querySelector('.ferr').textContent=erros.cpf;notify(erros.cpf,'err');return;}
+  if(erros.email){$('qfg-email').classList.add('err');$('qfg-email').querySelector('.ferr').textContent=erros.email;notify(erros.email,'err');return;}
+  Cli.create(d);
+  notify('Cliente adicionado! ✅');
+  ['q-nome','q-cpf','q-email','q-nasc','q-tel','q-fazenda','q-mun','q-ha'].forEach(id=>{const el=$(id);if(el)el.value='';});
+}
+
+function downloadModelo() {
+  const h='nome;cpf_cnpj;data_nasc;email;telefone;fazenda;municipio;uf;hectares;cultura;matricula;status_car;num_car;banco;linha_credito;valor_credito;venc_credito;status_geo;venc_licenca;obs';
+  const ex='João Pedro Silva;123.456.789-00;1975-06-25;joao@email.com;(65) 99999-0001;Fazenda Boa Vista;Rondonópolis;MT;850;Soja;1234;Aprovado;MT-1234567-XXXXX;Banco do Brasil;Pronamp;320000;2026-09-17;Entregue;2029-05-20;Observações aqui';
+  const blob=new Blob(['\uFEFF'+h+'\n'+ex],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='modelo_crm_agro.csv';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+}
+
+// ============================================================
+// DADOS DE DEMONSTRAÇÃO
+// ============================================================
+function seedDemoData() {
+  if(DB.all(SES.uid,'clientes').length) return; // já tem dados
+  const hoje=new Date();
+  const daysOut=(n)=>{const d=new Date();d.setDate(d.getDate()+n);return d.toISOString().split('T')[0];};
+  const nasc=(y,m,d)=>`${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+
+  // Clientes
+  const c1=Cli.create({nome:'João Pedro Silva',cpf_cnpj:'123.456.789-00',data_nasc:nasc(1975,6,hoje.getDate()+1<=30?hoje.getDate()+1:1),email:'joao@fazendaboavista.com',telefone:'(65) 99999-0001',whatsapp:'(65) 99999-0001',fazenda:'Fazenda Boa Vista',municipio:'Rondonópolis',uf:'MT',hectares:'850',cultura:'Soja',cultura2:'Milho',matricula:'1.234',status_car:'Aprovado',num_car:'MT-1234567-XXXXX',banco:'Banco do Brasil',linha_credito:'Pronamp',valor_credito:'320000',venc_credito:daysOut(87),tipo_geo:'Georreferenciamento (SIGEF)',status_geo:'Entregue',obs:'Cliente fidelizado. Potencial de renovação de crédito em breve.'});
+  const c2=Cli.create({nome:'Maria Aparecida Costa',cpf_cnpj:'987.654.321-00',data_nasc:nasc(1968,3,15),email:'maria@trescorações.com',telefone:'(66) 98888-2233',whatsapp:'(66) 98888-2233',fazenda:'Fazenda Três Corações',municipio:'Nova Mutum',uf:'MT',hectares:'1200',cultura:'Soja',matricula:'5.678',status_car:'Em análise',banco:'SICREDI',linha_credito:'Pronamp',valor_credito:'450000',venc_credito:daysOut(200),tipo_geo:'Licença LO',status_geo:'Vistoria de Campo',venc_licenca:daysOut(160),obs:'CAR em análise. LO vence em breve, iniciar processo de renovação.'});
+  const c3=Cli.create({nome:'Carlos Eduardo Mendes',cpf_cnpj:'12.345.678/0001-99',data_nasc:nasc(1982,6,27),email:'carlos@fazendaalianca.com',telefone:'(66) 99888-1122',whatsapp:'(66) 99888-1122',fazenda:'Fazenda Aliança',municipio:'Juína',uf:'MT',hectares:'620',cultura:'Boi / Pastagem',matricula:'9.012',status_car:'Aprovado',tipo_geo:'CAR + Georreferenciamento',status_geo:'Orçamento Aprovado',obs:'Sem crédito ativo. Grande potencial para FCO Rural.'});
+  const c4=Cli.create({nome:'Ana Lima Ferreira',cpf_cnpj:'111.222.333-44',data_nasc:nasc(1990,8,10),email:'ana@sfazenda.com',telefone:'(66) 99777-5544',whatsapp:'(66) 99777-5544',fazenda:'Fazenda Santa Fé',municipio:'Primavera do Leste',uf:'MT',hectares:'400',cultura:'Algodão',status_car:'Não iniciado',banco:'SICREDI',linha_credito:'Pronaf',valor_credito:'180000',venc_credito:daysOut(61),obs:'Primeiro CAR em planejamento. Crédito vence em breve!'});
+
+  // Leads
+  Prosp.create({nome:'Paulo Souza',telefone:'(65) 99111-2233',municipio:'Sorriso-MT',origem:'Indicação',interesse:'Crédito Rural',etapa:'Lead',potencial:'60000',obs:'Indicado pelo João Pedro.'});
+  Prosp.create({nome:'Silvana Rocha',telefone:'(65) 98222-3344',municipio:'Lucas do Rio Verde-MT',origem:'Site',interesse:'CAR',etapa:'Contato Realizado',potencial:'35000'});
+  Prosp.create({nome:'Ricardo Fonseca',telefone:'(65) 99333-5566',municipio:'Campo Verde-MT',origem:'Evento / Feira',interesse:'Pacote Completo',etapa:'Reunião Agendada',potencial:'80000',obs:'Reunião agendada para esta semana.'});
+  Prosp.create({nome:'Antônio Braga',telefone:'(65) 99444-7788',municipio:'Sinop-MT',origem:'WhatsApp',interesse:'Licença Ambiental',etapa:'Proposta Enviada',potencial:'38000'});
+
+  // Operações Crédito
+  Cred.create({cliente_id:c1.id,banco:'Banco do Brasil',linha:'Pronamp',valor:'320000',etapa:'Documentação Solicitada',venc:daysOut(87)});
+  Cred.create({cliente_id:c2.id,banco:'SICREDI',linha:'Pronamp',valor:'450000',etapa:'Projeto Elaborado',venc:daysOut(200)});
+  Cred.create({cliente_id:c4.id,banco:'SICREDI',linha:'Pronaf',valor:'180000',etapa:'Protocolado no Banco',venc:daysOut(61)});
+
+  // Projetos Amb
+  Amb.create({cliente_id:c3.id,tipo:'CAR + Geo',etapa:'Orçamento Aprovado',valor:'12000'});
+  Amb.create({cliente_id:c2.id,tipo:'Licença LO',etapa:'Vistoria de Campo',valor:'4800',vistoria:daysOut(5),venc_licenca:daysOut(160)});
+  Amb.create({cliente_id:c1.id,tipo:'Georreferenciamento (SIGEF)',etapa:'Entrega do Projeto',valor:'6500'});
+
+  // Propostas
+  Prop.create({cliente_id:c1.id,servico:'Crédito Rural',valor:'320000',status:'Fechada',data:daysOut(-30),descricao:'Renovação Pronamp safra 2026/27',responsavel:SES.nome});
+  Prop.create({cliente_id:c2.id,servico:'Licença LO',valor:'4800',status:'Aberta',data:daysOut(-5),descricao:'Renovação da Licença de Operação',responsavel:SES.nome});
+  Prop.create({cliente_id:c3.id,servico:'Pacote Completo',valor:'12000',status:'Em negociação',data:daysOut(-10),descricao:'CAR + Georreferenciamento SIGEF',responsavel:SES.nome});
+  Prop.create({cliente_id:c4.id,servico:'Crédito Rural',valor:'180000',status:'Aberta',data:daysOut(-2),descricao:'Renovação Pronaf custeio algodão',responsavel:SES.nome});
+}
+
+// ============================================================
+// BOOT
+// ============================================================
+// A autenticação e o carregamento inicial agora acontecem via
+// fbAuth.onAuthStateChanged (ver bloco AUTENTICAÇÃO acima).
+</script>
+</body>
+</html>
