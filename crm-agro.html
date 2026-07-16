@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRM Agro — Crédito, Geo & Ambiental</title>
+<style>
+  :root {
+    --verde-escuro: #1a3a2a;
+    --verde-medio: #2d6a4f;
+    --verde-claro: #52b788;
+    --verde-suave: #d8f3dc;
+    --terra: #a0522d;
+    --terra-claro: #f4e0d0;
+    --amarelo: #f4a261;
+    --cinza-fundo: #f5f6f0;
+    --cinza-borda: #d8ddd0;
+    --cinza-texto: #3a3a3a;
+    --branco: #ffffff;
+    --vermelho: #e63946;
+    --azul: #457b9d;
+    --azul-claro: #dce8f0;
+    --fonte: 'Segoe UI', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--fonte); background: var(--cinza-fundo); color: var(--cinza-texto); font-size: 14px; }
+
+  /* HEADER */
+  header {
+    background: var(--verde-escuro);
+    color: white;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  .logo { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+  .logo span { color: var(--verde-claro); }
+  .header-right { display: flex; gap: 8px; align-items: center; }
+  .badge-alerta {
+    background: var(--vermelho); color: white;
+    border-radius: 20px; padding: 3px 10px;
+    font-size: 12px; font-weight: 600; cursor: pointer;
+  }
+
+  /* LAYOUT */
+  .layout { display: flex; min-height: calc(100vh - 56px); }
+
+  /* SIDEBAR */
+  nav {
+    width: 200px; background: var(--verde-escuro);
+    padding: 16px 0; flex-shrink: 0;
+  }
+  nav a {
+    display: flex; align-items: center; gap: 10px;
+    padding: 11px 20px; color: #a8c5b0;
+    text-decoration: none; font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: all 0.15s;
+    border-left: 3px solid transparent;
+  }
+  nav a:hover { color: white; background: rgba(255,255,255,0.06); }
+  nav a.ativo { color: white; background: rgba(82,183,136,0.15); border-left-color: var(--verde-claro); }
+  nav .nav-sep { padding: 12px 20px 4px; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #5a7a65; }
+  nav .icon { font-size: 16px; width: 18px; text-align: center; }
+
+  /* CONTEÚDO */
+  main { flex: 1; padding: 24px; overflow-y: auto; }
+  .page { display: none; }
+  .page.ativa { display: block; }
+
+  /* TÍTULOS */
+  .page-titulo { font-size: 22px; font-weight: 700; color: var(--verde-escuro); margin-bottom: 4px; }
+  .page-sub { color: #6b7c6a; font-size: 13px; margin-bottom: 20px; }
+
+  /* CARDS DO DASHBOARD */
+  .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 24px; }
+  .card-stat {
+    background: white; border-radius: 10px; padding: 16px;
+    border-left: 4px solid var(--verde-claro);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  }
+  .card-stat.laranja { border-left-color: var(--amarelo); }
+  .card-stat.azul { border-left-color: var(--azul); }
+  .card-stat.vermelho { border-left-color: var(--vermelho); }
+  .card-stat .numero { font-size: 28px; font-weight: 700; color: var(--verde-escuro); }
+  .card-stat .label { font-size: 12px; color: #6b7c6a; margin-top: 2px; }
+  .card-stat .sub { font-size: 11px; color: #9aab95; margin-top: 6px; }
+
+  /* ALERTAS */
+  .alertas-lista { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+  .alerta-item {
+    background: white; border-radius: 8px; padding: 12px 16px;
+    display: flex; align-items: center; gap: 12px;
+    border-left: 4px solid var(--amarelo);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .alerta-item.urgente { border-left-color: var(--vermelho); }
+  .alerta-item.info { border-left-color: var(--azul); }
+  .alerta-icone { font-size: 20px; }
+  .alerta-texto strong { display: block; font-size: 13px; }
+  .alerta-texto span { font-size: 12px; color: #6b7c6a; }
+  .alerta-acao { margin-left: auto; }
+
+  /* SEÇÃO */
+  .secao { background: white; border-radius: 10px; padding: 20px; margin-bottom: 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+  .secao-titulo { font-size: 14px; font-weight: 700; color: var(--verde-escuro); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; gap: 8px; }
+
+  /* FORMULÁRIOS */
+  .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+  .form-grupo { display: flex; flex-direction: column; gap: 4px; }
+  .form-grupo label { font-size: 11px; font-weight: 600; color: #5a7a65; text-transform: uppercase; letter-spacing: 0.5px; }
+  .form-grupo input, .form-grupo select, .form-grupo textarea {
+    padding: 8px 10px; border: 1px solid var(--cinza-borda);
+    border-radius: 6px; font-size: 13px; font-family: var(--fonte);
+    background: white; color: var(--cinza-texto);
+    transition: border-color 0.15s;
+  }
+  .form-grupo input:focus, .form-grupo select:focus {
+    outline: none; border-color: var(--verde-claro);
+    box-shadow: 0 0 0 3px rgba(82,183,136,0.15);
+  }
+  .form-grupo textarea { resize: vertical; min-height: 70px; }
+  .form-completo { grid-column: 1 / -1; }
+
+  /* BOTÕES */
+  .btn { padding: 8px 16px; border-radius: 6px; border: none; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+  .btn-verde { background: var(--verde-medio); color: white; }
+  .btn-verde:hover { background: var(--verde-escuro); }
+  .btn-outline { background: white; color: var(--verde-medio); border: 1px solid var(--verde-medio); }
+  .btn-outline:hover { background: var(--verde-suave); }
+  .btn-vermelho { background: var(--vermelho); color: white; }
+  .btn-amarelo { background: var(--amarelo); color: white; }
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
+  .btn-group { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+
+  /* TABELA */
+  .tabela-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th { background: var(--verde-escuro); color: white; padding: 10px 12px; text-align: left; font-weight: 600; font-size: 12px; white-space: nowrap; }
+  tbody tr { border-bottom: 1px solid var(--cinza-borda); }
+  tbody tr:hover { background: var(--cinza-fundo); }
+  tbody td { padding: 10px 12px; vertical-align: middle; }
+  tbody td .nome-link { font-weight: 600; color: var(--verde-medio); cursor: pointer; }
+  tbody td .nome-link:hover { text-decoration: underline; }
+
+  /* BADGES */
+  .badge { display: inline-block; padding: 3px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .badge-verde { background: var(--verde-suave); color: var(--verde-medio); }
+  .badge-amarelo { background: #fef3cd; color: #b07a00; }
+  .badge-vermelho { background: #fde8ea; color: var(--vermelho); }
+  .badge-azul { background: var(--azul-claro); color: var(--azul); }
+  .badge-cinza { background: #e8e8e8; color: #555; }
+  .badge-laranja { background: #fde8d0; color: #c05a00; }
+
+  /* FUNIL / KANBAN */
+  .kanban { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; }
+  .kanban-col {
+    min-width: 190px; flex-shrink: 0;
+    background: var(--cinza-fundo); border-radius: 10px; padding: 12px;
+  }
+  .kanban-col-titulo {
+    font-size: 12px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.5px; color: var(--verde-escuro);
+    margin-bottom: 10px; padding-bottom: 8px;
+    border-bottom: 2px solid var(--verde-claro);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .kanban-card {
+    background: white; border-radius: 8px; padding: 10px 12px;
+    margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    border-left: 3px solid var(--verde-claro);
+    cursor: pointer; transition: box-shadow 0.15s;
+  }
+  .kanban-card:hover { box-shadow: 0 3px 8px rgba(0,0,0,0.14); }
+  .kanban-card.laranja { border-left-color: var(--amarelo); }
+  .kanban-card.azul { border-left-color: var(--azul); }
+  .kanban-card .kc-nome { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+  .kanban-card .kc-info { font-size: 11px; color: #6b7c6a; }
+  .kanban-card .kc-valor { font-size: 12px; font-weight: 700; color: var(--verde-medio); margin-top: 6px; }
+
+  /* TABS */
+  .tabs { display: flex; gap: 2px; margin-bottom: 18px; border-bottom: 2px solid var(--cinza-borda); }
+  .tab { padding: 9px 18px; cursor: pointer; font-size: 13px; font-weight: 600; color: #6b7c6a; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+  .tab.ativa { color: var(--verde-medio); border-bottom-color: var(--verde-medio); }
+  .tab-content { display: none; }
+  .tab-content.ativa { display: block; }
+
+  /* IMPORT */
+  .import-box {
+    border: 2px dashed var(--cinza-borda); border-radius: 10px;
+    padding: 32px; text-align: center; background: white;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .import-box:hover { border-color: var(--verde-claro); background: var(--verde-suave); }
+  .import-box .icon-big { font-size: 40px; margin-bottom: 10px; }
+  .import-box p { color: #6b7c6a; font-size: 13px; margin-top: 6px; }
+
+  /* TICKET */
+  .ticket-box { background: var(--verde-suave); border-radius: 8px; padding: 14px 18px; display: inline-flex; gap: 24px; margin-bottom: 18px; }
+  .ticket-item .tl { font-size: 11px; font-weight: 600; color: #5a7a65; text-transform: uppercase; }
+  .ticket-item .tv { font-size: 22px; font-weight: 700; color: var(--verde-escuro); }
+
+  /* MODAL */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center; }
+  .modal-overlay.aberto { display: flex; }
+  .modal { background: white; border-radius: 12px; padding: 28px; width: 680px; max-width: 96vw; max-height: 90vh; overflow-y: auto; position: relative; }
+  .modal-titulo { font-size: 18px; font-weight: 700; color: var(--verde-escuro); margin-bottom: 18px; }
+  .modal-fechar { position: absolute; top: 18px; right: 20px; font-size: 20px; cursor: pointer; color: #888; background: none; border: none; }
+
+  /* TIMELINE */
+  .timeline { list-style: none; position: relative; }
+  .timeline::before { content: ''; position: absolute; left: 16px; top: 0; bottom: 0; width: 2px; background: var(--cinza-borda); }
+  .timeline li { display: flex; gap: 14px; margin-bottom: 14px; position: relative; }
+  .tl-dot { width: 32px; height: 32px; border-radius: 50%; background: var(--verde-claro); color: white; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; z-index: 1; }
+  .tl-texto strong { display: block; font-size: 13px; }
+  .tl-texto span { font-size: 12px; color: #6b7c6a; }
+
+  /* BUSCA */
+  .busca-row { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+  .busca-input { flex: 1; min-width: 180px; padding: 8px 12px; border: 1px solid var(--cinza-borda); border-radius: 6px; font-size: 13px; }
+  .busca-input:focus { outline: none; border-color: var(--verde-claro); }
+
+  /* PROGRESS BAR */
+  .progress-bar { height: 6px; background: var(--cinza-borda); border-radius: 3px; margin-top: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--verde-claro); border-radius: 3px; }
+
+  /* RESPONSIVE */
+  @media (max-width: 700px) {
+    nav { width: 52px; }
+    nav a span { display: none; }
+    nav .nav-sep { display: none; }
+    .logo { font-size: 15px; }
+    main { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🌾 CRM <span>Agro</span></div>
+  <div class="header-right">
+    <div class="badge-alerta" onclick="irPara('alertas')">⚠️ 4 alertas ativos</div>
+    <button class="btn btn-verde btn-sm" onclick="abrirModal('modal-novo-cliente')">+ Novo Cliente</button>
+  </div>
+</header>
+
+<div class="layout">
+  <nav>
+    <div class="nav-sep">Início</div>
+    <a onclick="irPara('dashboard')" id="nav-dashboard" class="ativo"><span class="icon">📊</span><span>Dashboard</span></a>
+    <a onclick="irPara('alertas')" id="nav-alertas"><span class="icon">🔔</span><span>Alertas</span></a>
+
+    <div class="nav-sep">Clientes</div>
+    <a onclick="irPara('clientes')" id="nav-clientes"><span class="icon">🧑‍🌾</span><span>Carteira</span></a>
+    <a onclick="irPara('importar')" id="nav-importar"><span class="icon">📂</span><span>Importar</span></a>
+
+    <div class="nav-sep">Funis</div>
+    <a onclick="irPara('funil-prospeccao')" id="nav-funil-prospeccao"><span class="icon">🎯</span><span>Prospecção</span></a>
+    <a onclick="irPara('funil-credito')" id="nav-funil-credito"><span class="icon">💰</span><span>Crédito Rural</span></a>
+    <a onclick="irPara('funil-ambiental')" id="nav-funil-ambiental"><span class="icon">🌿</span><span>Ambiental & Geo</span></a>
+  </nav>
+
+  <main>
+    <!-- ===== DASHBOARD ===== -->
+    <div class="page ativa" id="page-dashboard">
+      <div class="page-titulo">📊 Visão Geral da Carteira</div>
+      <div class="page-sub">Resumo do mês atual · Atualizado agora</div>
+
+      <div class="cards-grid">
+        <div class="card-stat">
+          <div class="numero">24</div>
+          <div class="label">Clientes Ativos</div>
+          <div class="sub">+3 esse mês</div>
+        </div>
+        <div class="card-stat laranja">
+          <div class="numero">R$1,2M</div>
+          <div class="label">Crédito em Carteira</div>
+          <div class="sub">8 contratos ativos</div>
+        </div>
+        <div class="card-stat azul">
+          <div class="numero">11</div>
+          <div class="label">Projetos Geo/Amb</div>
+          <div class="sub">4 em execução</div>
+        </div>
+        <div class="card-stat vermelho">
+          <div class="numero">4</div>
+          <div class="label">Alertas Pendentes</div>
+          <div class="sub">2 urgentes</div>
+        </div>
+        <div class="card-stat">
+          <div class="numero">R$51k</div>
+          <div class="label">Ticket Médio</div>
+          <div class="sub">por cliente</div>
+        </div>
+        <div class="card-stat laranja">
+          <div class="numero">7</div>
+          <div class="label">Oportunidades Upsell</div>
+          <div class="sub">vencendo em 90 dias</div>
+        </div>
+      </div>
+
+      <div class="secao">
+        <div class="secao-titulo">🔔 Alertas Mais Urgentes</div>
+        <div class="alertas-lista">
+          <div class="alerta-item urgente">
+            <div class="alerta-icone">🎂</div>
+            <div class="alerta-texto"><strong>Amanhã é aniversário de João Pedro Silva</strong><span>Produtor · Soja · Rondonópolis-MT</span></div>
+            <div class="alerta-acao"><button class="btn btn-verde btn-sm">Enviar Parabéns</button></div>
+          </div>
+          <div class="alerta-item">
+            <div class="alerta-icone">💰</div>
+            <div class="alerta-texto"><strong>Crédito vence em 87 dias — Fazenda Boa Vista</strong><span>R$ 320.000 · Pronamp · Banco do Brasil</span></div>
+            <div class="alerta-acao"><button class="btn btn-amarelo btn-sm">Nova Proposta</button></div>
+          </div>
+          <div class="alerta-item">
+            <div class="alerta-icone">🌿</div>
+            <div class="alerta-texto"><strong>Licença Ambiental vence em 160 dias — Faz. Três Corações</strong><span>LO · Renovação necessária</span></div>
+            <div class="alerta-acao"><button class="btn btn-outline btn-sm">Agendar Visita</button></div>
+          </div>
+          <div class="alerta-item info">
+            <div class="alerta-icone">📍</div>
+            <div class="alerta-texto"><strong>CAR em análise há 45 dias — Maria Aparecida Costa</strong><span>Aguardando aprovação do órgão ambiental</span></div>
+            <div class="alerta-acao"><button class="btn btn-outline btn-sm">Verificar Status</button></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="secao">
+        <div class="secao-titulo">📈 Funis — Situação Atual</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;">
+          <div>
+            <div style="font-size:12px;font-weight:700;margin-bottom:8px;color:#5a7a65;">PROSPECÇÃO</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;justify-content:space-between;font-size:12px;"><span>Leads</span><strong>5</strong></div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;"><span>Propostas Enviadas</span><strong>3</strong></div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;"><span>Fechados (mês)</span><strong>2</strong></div>
+            </div>
+            <div class="progress-bar" style="margin-top:10px;"><div class="progress-fill" style="width:65%"></div></div>
+          </div>
+          <div>
+            <div style="font-size:12px;font-weight:700;margin-bottom:8px;color:#5a7a65;">CRÉDITO RURAL</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;justify-content:space-between;font-size:12px;"><span>Em Documentação</span><strong>4</strong></div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;"><span>Protocolados</span><strong>2</strong></div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;"><span>Aprovados (mês)</span><strong>3</strong></div>
+            </div>
+            <div class="progress-bar" style="margin-top:10px;"><div class="progress-fill" style="width:80%;background:var(--amarelo)"></div></div>
+          </div>
+          <div>
+            <div style="font-size:12px;font-weight:700;margin-bottom:8px;color:#5a7a65;">AMBIENTAL & GEO</div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;justify-content:space-between;font-size:12px;"><span>Em Vistoria</span><strong>3</strong></div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;"><span>Em Processamento</span><strong>2</strong></div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;"><span>Entregues (mês)</span><strong>2</strong></div>
+            </div>
+            <div class="progress-bar" style="margin-top:10px;"><div class="progress-fill" style="width:55%;background:var(--azul)"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ALERTAS ===== -->
+    <div class="page" id="page-alertas">
+      <div class="page-titulo">🔔 Central de Alertas</div>
+      <div class="page-sub">Automações ativas — o sistema avisa antes do prazo vencer</div>
+
+      <div class="secao">
+        <div class="secao-titulo">🎂 Aniversários — Próximos 7 dias</div>
+        <div class="alertas-lista">
+          <div class="alerta-item urgente">
+            <div class="alerta-icone">🎂</div>
+            <div class="alerta-texto"><strong>João Pedro Silva — AMANHÃ (23/06)</strong><span>📱 (65) 99999-0001 · Soja · Rondonópolis-MT</span></div>
+            <div class="alerta-acao"><button class="btn btn-verde btn-sm" onclick="alert('Mensagem de parabéns copiada! Cole no WhatsApp 😊')">📋 Copiar Msg</button></div>
+          </div>
+          <div class="alerta-item">
+            <div class="alerta-icone">🎂</div>
+            <div class="alerta-texto"><strong>Carlos Eduardo Mendes — 27/06</strong><span>📱 (66) 99888-1122 · Boi · Juína-MT</span></div>
+            <div class="alerta-acao"><button class="btn btn-outline btn-sm">📋 Copiar Msg</button></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="secao">
+        <div class="secao-titulo">💰 Crédito Rural — Vencimentos em até 90 dias</div>
+        <div class="alertas-lista">
+          <div class="alerta-item">
+            <div class="alerta-icone">⏰</div>
+            <div class="alerta-texto"><strong>Fazenda Boa Vista — Vence em 87 dias (17/09)</strong><span>R$ 320.000 · Pronamp · BB · João Pedro Silva</span></div>
+            <div class="alerta-acao"><button class="btn btn-amarelo btn-sm">Proposta</button></div>
+          </div>
+          <div class="alerta-item">
+            <div class="alerta-icone">⏰</div>
+            <div class="alerta-texto"><strong>Fazenda Santa Fé — Vence em 61 dias (22/08)</strong><span>R$ 180.000 · Pronaf · SICREDI · Ana Lima</span></div>
+            <div class="alerta-acao"><button class="btn btn-amarelo btn-sm">Proposta</button></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="secao">
+        <div class="secao-titulo">🌿 Licenças Ambientais — Vencimentos em até 180 dias</div>
+        <div class="alertas-lista">
+          <div class="alerta-item">
+            <div class="alerta-icone">📋</div>
+            <div class="alerta-texto"><strong>Fazenda Três Corações — LO vence em 160 dias (29/11)</strong><span>Maria Aparecida Costa · Soja/Milho · Nova Mutum-MT</span></div>
+            <div class="alerta-acao"><button class="btn btn-outline btn-sm">Agendar</button></div>
+          </div>
+          <div class="alerta-item">
+            <div class="alerta-icone">📋</div>
+            <div class="alerta-texto"><strong>Fazenda Aliança — LP vence em 142 dias (11/11)</strong><span>Roberto Faria · Pastagem · Comodoro-MT</span></div>
+            <div class="alerta-acao"><button class="btn btn-outline btn-sm">Agendar</button></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="secao" style="background:#f0faf4;border:1px solid #b7e4c7;">
+        <div class="secao-titulo">⚙️ Regras de Automação Configuradas</div>
+        <table>
+          <thead><tr><th>Gatilho</th><th>Antecedência</th><th>Ação</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>🎂 Aniversário do Cliente</td><td>1 dia antes</td><td>Notificação + Msg WhatsApp</td><td><span class="badge badge-verde">Ativo</span></td></tr>
+            <tr><td>💰 Vencimento de Crédito</td><td>90 dias antes</td><td>Alerta + Abertura de oportunidade</td><td><span class="badge badge-verde">Ativo</span></td></tr>
+            <tr><td>🌿 Vencimento de Licença Ambiental</td><td>180 dias antes</td><td>Alerta + Agendamento de vistoria</td><td><span class="badge badge-verde">Ativo</span></td></tr>
+            <tr><td>📍 CAR em análise</td><td>Após 30 dias</td><td>Lembrete para follow-up</td><td><span class="badge badge-verde">Ativo</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== CARTEIRA DE CLIENTES ===== -->
+    <div class="page" id="page-clientes">
+      <div class="page-titulo">🧑‍🌾 Carteira de Clientes</div>
+      <div class="page-sub">Todos os produtores cadastrados na consultoria</div>
+
+      <div class="ticket-box">
+        <div class="ticket-item"><div class="tl">Ticket Médio</div><div class="tv">R$ 51.000</div></div>
+        <div class="ticket-item"><div class="tl">Total em Carteira</div><div class="tv">R$ 1,22M</div></div>
+        <div class="ticket-item"><div class="tl">Clientes Ativos</div><div class="tv">24</div></div>
+      </div>
+
+      <div class="busca-row">
+        <input class="busca-input" placeholder="🔍 Buscar por nome, fazenda, município..." oninput="filtrarClientes(this.value)" id="input-busca-cliente">
+        <select class="busca-input" style="flex:0 0 160px;" onchange="filtrarClientes(document.getElementById('input-busca-cliente').value)">
+          <option value="">Todos os serviços</option>
+          <option>Crédito Rural</option>
+          <option>Georreferenciamento</option>
+          <option>Ambiental</option>
+        </select>
+        <button class="btn btn-verde" onclick="abrirModal('modal-novo-cliente')">+ Novo Cliente</button>
+      </div>
+
+      <div class="secao" style="padding:0;">
+        <div class="tabela-wrap">
+          <table id="tabela-clientes">
+            <thead>
+              <tr>
+                <th>Nome / Empresa</th>
+                <th>Fazenda</th>
+                <th>Município/UF</th>
+                <th>Há (ha)</th>
+                <th>Cultura</th>
+                <th>CAR</th>
+                <th>Crédito</th>
+                <th>Ticket</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-clientes">
+              <tr>
+                <td><span class="nome-link" onclick="abrirPerfil(0)">João Pedro Silva</span><br><small style="color:#9aab95;">CPF: 123.456.789-00</small></td>
+                <td>Faz. Boa Vista</td>
+                <td>Rondonópolis-MT</td>
+                <td>850</td>
+                <td>Soja / Milho</td>
+                <td><span class="badge badge-verde">Aprovado</span></td>
+                <td><span class="badge badge-amarelo">Vence 87d</span></td>
+                <td>R$ 95k</td>
+                <td><button class="btn btn-outline btn-sm" onclick="abrirPerfil(0)">Ver</button></td>
+              </tr>
+              <tr>
+                <td><span class="nome-link" onclick="abrirPerfil(1)">Maria Aparecida Costa</span><br><small style="color:#9aab95;">CPF: 987.654.321-00</small></td>
+                <td>Faz. Três Corações</td>
+                <td>Nova Mutum-MT</td>
+                <td>1.200</td>
+                <td>Soja / Milho</td>
+                <td><span class="badge badge-amarelo">Em análise</span></td>
+                <td><span class="badge badge-verde">Regular</span></td>
+                <td>R$ 120k</td>
+                <td><button class="btn btn-outline btn-sm" onclick="abrirPerfil(1)">Ver</button></td>
+              </tr>
+              <tr>
+                <td><span class="nome-link" onclick="abrirPerfil(2)">Carlos Eduardo Mendes</span><br><small style="color:#9aab95;">CNPJ: 12.345.678/0001-99</small></td>
+                <td>Faz. Aliança</td>
+                <td>Juína-MT</td>
+                <td>620</td>
+                <td>Boi / Pastagem</td>
+                <td><span class="badge badge-verde">Aprovado</span></td>
+                <td><span class="badge badge-cinza">Sem crédito</span></td>
+                <td>R$ 28k</td>
+                <td><button class="btn btn-outline btn-sm" onclick="abrirPerfil(2)">Ver</button></td>
+              </tr>
+              <tr>
+                <td><span class="nome-link">Ana Lima Ferreira</span><br><small style="color:#9aab95;">CPF: 111.222.333-44</small></td>
+                <td>Faz. Santa Fé</td>
+                <td>Primavera do Leste-MT</td>
+                <td>400</td>
+                <td>Algodão / Soja</td>
+                <td><span class="badge badge-cinza">Não iniciado</span></td>
+                <td><span class="badge badge-amarelo">Vence 61d</span></td>
+                <td>R$ 45k</td>
+                <td><button class="btn btn-outline btn-sm">Ver</button></td>
+              </tr>
+              <tr>
+                <td><span class="nome-link">Roberto Faria Nunes</span><br><small style="color:#9aab95;">CPF: 555.666.777-88</small></td>
+                <td>Faz. Aliança II</td>
+                <td>Comodoro-MT</td>
+                <td>320</td>
+                <td>Boi</td>
+                <td><span class="badge badge-verde">Aprovado</span></td>
+                <td><span class="badge badge-cinza">Sem crédito</span></td>
+                <td>R$ 18k</td>
+                <td><button class="btn btn-outline btn-sm">Ver</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== IMPORTAR ===== -->
+    <div class="page" id="page-importar">
+      <div class="page-titulo">📂 Importar Clientes</div>
+      <div class="page-sub">Importe sua pasta de clientes via CSV, Excel ou preenchimento manual</div>
+
+      <div class="tabs">
+        <div class="tab ativa" onclick="abrirTab(this,'tab-csv')">📄 Importar CSV / Excel</div>
+        <div class="tab" onclick="abrirTab(this,'tab-modelo')">📋 Baixar Modelo</div>
+        <div class="tab" onclick="abrirTab(this,'tab-regras')">ℹ️ Campos Automáticos</div>
+      </div>
+
+      <div class="tab-content ativa" id="tab-csv">
+        <div class="secao">
+          <div class="secao-titulo">📤 Enviar Arquivo</div>
+          <div class="import-box" onclick="document.getElementById('file-import').click()">
+            <div class="icon-big">📂</div>
+            <strong>Clique para selecionar ou arraste o arquivo aqui</strong>
+            <p>Formatos aceitos: .CSV · .XLSX · .XLS</p>
+            <p style="margin-top:6px;">O sistema vai extrair automaticamente tudo que encontrar</p>
+            <input type="file" id="file-import" style="display:none" accept=".csv,.xlsx,.xls" onchange="processarArquivo(this)">
+          </div>
+          <div id="preview-import" style="margin-top:16px;display:none;">
+            <div class="secao-titulo">✅ Prévia dos dados encontrados</div>
+            <div id="preview-conteudo"></div>
+            <div class="btn-group">
+              <button class="btn btn-verde">✅ Confirmar Importação</button>
+              <button class="btn btn-outline">❌ Cancelar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="tab-modelo">
+        <div class="secao">
+          <div class="secao-titulo">📋 Modelo de Planilha para Importação</div>
+          <p style="margin-bottom:14px;color:#6b7c6a;">Baixe o modelo abaixo, preencha com seus dados e importe. Os campos marcados com ✅ são extraídos automaticamente; os marcados com ✏️ precisam de preenchimento manual.</p>
+          <table>
+            <thead><tr><th>Campo</th><th>Coluna na Planilha</th><th>Origem</th></tr></thead>
+            <tbody>
+              <tr><td>Nome Completo</td><td>A - nome</td><td>✅ Automático do arquivo</td></tr>
+              <tr><td>CPF / CNPJ</td><td>B - cpf_cnpj</td><td>✅ Automático</td></tr>
+              <tr><td>Data de Nascimento</td><td>C - data_nasc</td><td>✅ Automático</td></tr>
+              <tr><td>E-mail</td><td>D - email</td><td>✅ Automático</td></tr>
+              <tr><td>Telefone / WhatsApp</td><td>E - telefone</td><td>✅ Automático</td></tr>
+              <tr><td>Nome da Fazenda</td><td>F - fazenda</td><td>✅ Automático</td></tr>
+              <tr><td>Município</td><td>G - municipio</td><td>✅ Automático</td></tr>
+              <tr><td>UF</td><td>H - uf</td><td>✅ Automático</td></tr>
+              <tr><td>Área (hectares)</td><td>I - hectares</td><td>✅ Automático</td></tr>
+              <tr><td>Cultura Principal</td><td>J - cultura</td><td>✅ Automático</td></tr>
+              <tr><td>Nº Matrícula Imóvel</td><td>K - matricula</td><td>✅ Automático</td></tr>
+              <tr><td>Status CAR</td><td>L - status_car</td><td>✅ Automático (se disponível)</td></tr>
+              <tr><td>Nº do CAR</td><td>M - num_car</td><td>✅ Automático (se disponível)</td></tr>
+              <tr><td>Banco (Inst. Financeira)</td><td>N - banco</td><td>✅ Automático (se disponível)</td></tr>
+              <tr><td>Linha de Crédito</td><td>O - linha_credito</td><td>✅ Automático (se disponível)</td></tr>
+              <tr><td>Valor Financiado</td><td>P - valor_credito</td><td>✅ Automático (se disponível)</td></tr>
+              <tr><td>Data Vencimento Crédito</td><td>Q - venc_credito</td><td>✅ Automático (se disponível)</td></tr>
+              <tr><td>Status Geo/Ambiental</td><td>R - status_geo</td><td>✏️ Manual (preencher depois)</td></tr>
+              <tr><td>Data Vistoria Campo</td><td>S - data_vistoria</td><td>✏️ Manual</td></tr>
+              <tr><td>Data Emissão Licença</td><td>T - data_licenca</td><td>✏️ Manual</td></tr>
+              <tr><td>Data Vencimento Licença</td><td>U - venc_licenca</td><td>✏️ Manual</td></tr>
+              <tr><td>Observações</td><td>V - obs</td><td>✏️ Manual</td></tr>
+            </tbody>
+          </table>
+          <div class="btn-group">
+            <button class="btn btn-verde" onclick="baixarModelo()">⬇️ Baixar Modelo CSV</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="tab-regras">
+        <div class="secao">
+          <div class="secao-titulo">ℹ️ O que é extraído automaticamente</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div style="background:var(--verde-suave);border-radius:8px;padding:14px;">
+              <strong style="color:var(--verde-escuro);">✅ Extraído Automaticamente</strong>
+              <ul style="margin-top:8px;padding-left:18px;font-size:13px;line-height:2;">
+                <li>Nome, CPF/CNPJ, e-mail, telefone</li>
+                <li>Data de nascimento → alerta de aniversário</li>
+                <li>Nome da fazenda, município, UF</li>
+                <li>Área em hectares, cultura principal</li>
+                <li>Número de matrícula do imóvel</li>
+                <li>Status do CAR e número</li>
+                <li>Instituição financeira e linha de crédito</li>
+                <li>Valor financiado e data de vencimento</li>
+              </ul>
+            </div>
+            <div style="background:var(--terra-claro);border-radius:8px;padding:14px;">
+              <strong style="color:var(--terra);">✏️ Preenchimento Manual</strong>
+              <ul style="margin-top:8px;padding-left:18px;font-size:13px;line-height:2;">
+                <li>Status atual do projeto Geo/Ambiental</li>
+                <li>Data da vistoria de campo</li>
+                <li>Data de emissão da licença</li>
+                <li>Data de vencimento da licença</li>
+                <li>Tipo de licença (LP, LI, LO)</li>
+                <li>Histórico de atendimentos</li>
+                <li>Observações específicas do produtor</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== FUNIL: PROSPECÇÃO ===== -->
+    <div class="page" id="page-funil-prospeccao">
+      <div class="page-titulo">🎯 Funil de Prospecção</div>
+      <div class="page-sub">Acompanhe cada lead do primeiro contato até o fechamento</div>
+
+      <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+        <button class="btn btn-verde" onclick="abrirModal('modal-novo-lead')">+ Novo Lead</button>
+        <div style="flex:1;min-width:150px;background:white;border-radius:8px;padding:10px 16px;border:1px solid var(--cinza-borda);">
+          <span style="font-size:11px;color:#5a7a65;font-weight:700;">TOTAL PIPELINE</span>
+          <span style="font-size:18px;font-weight:700;color:var(--verde-escuro);margin-left:10px;">R$ 245.000</span>
+        </div>
+      </div>
+
+      <div class="kanban">
+        <div class="kanban-col">
+          <div class="kanban-col-titulo">Lead <span class="badge badge-cinza">3</span></div>
+          <div class="kanban-card">
+            <div class="kc-nome">Produtor Indicado — Paulo</div>
+            <div class="kc-info">📍 Campo Verde-MT · Soja</div>
+            <div class="kc-valor">Potencial: R$ 60k</div>
+          </div>
+          <div class="kanban-card">
+            <div class="kc-nome">Site — Silvana Rocha</div>
+            <div class="kc-info">📍 Lucas do Rio Verde-MT</div>
+            <div class="kc-valor">Potencial: R$ 35k</div>
+          </div>
+          <div class="kanban-card">
+            <div class="kc-nome">Indicação — Marcos Lima</div>
+            <div class="kc-info">📍 Sorriso-MT · Milho</div>
+            <div class="kc-valor">Potencial: R$ 45k</div>
+          </div>
+        </div>
+
+        <div class="kanban-col">
+          <div class="kanban-col-titulo">Contato Realizado <span class="badge badge-cinza">2</span></div>
+          <div class="kanban-card laranja">
+            <div class="kc-nome">Edson Carvalho</div>
+            <div class="kc-info">📞 Ligou ontem · Boi</div>
+            <div class="kc-valor">Potencial: R$ 22k</div>
+          </div>
+          <div class="kanban-card laranja">
+            <div class="kc-nome">Juliana Matos</div>
+            <div class="kc-info">💬 WhatsApp · Algodão</div>
+            <div class="kc-valor">Potencial: R$ 40k</div>
+          </div>
+        </div>
+
+        <div class="kanban-col">
+          <div class="kanban-col-titulo">Reunião Agendada <span class="badge badge-cinza">2</span></div>
+          <div class="kanban-card azul">
+            <div class="kc-nome">Ricardo Fonseca</div>
+            <div class="kc-info">📅 25/06 às 10h · Soja</div>
+            <div class="kc-valor">Potencial: R$ 80k</div>
+          </div>
+          <div class="kanban-card azul">
+            <div class="kc-nome">Tereza Aguiar</div>
+            <div class="kc-info">📅 28/06 às 14h · Milho</div>
+            <div class="kc-valor">Potencial: R$ 55k</div>
+          </div>
+        </div>
+
+        <div class="kanban-col">
+          <div class="kanban-col-titulo">Proposta Enviada <span class="badge badge-cinza">1</span></div>
+          <div class="kanban-card laranja">
+            <div class="kc-nome">Antônio Braga</div>
+            <div class="kc-info">📄 Enviada há 5 dias</div>
+            <div class="kc-valor">R$ 38.000</div>
+          </div>
+        </div>
+
+        <div class="kanban-col">
+          <div class="kanban-col-titulo" style="border-bottom-color:var(--verde-claro);">✅ Cliente Fechado <span class="badge badge-verde">2</span></div>
+          <div class="kanban-card" style="border-left-color:var(--verde-claro);">
+            <div class="kc-nome">Luiz Henrique Costa</div>
+            <div class="kc-info">✅ Fechado em 18/06</div>
+            <div class="kc-valor">R$ 72.000</div>
+          </div>
+          <div class="kanban-card" style="border-left-color:var(--verde-claro);">
+            <div class="kc-nome">Fernanda Gomes</div>
+            <div class="kc-info">✅ Fechado em 12/06</div>
+            <div class="kc-valor">R$ 29.000</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== FUNIL: CRÉDITO RURAL ===== -->
+    <div class="page" id="page-funil-credito">
+      <div class="page-titulo">💰 Funil de Crédito Rural</div>
+      <div class="page-sub">Do pedido de documentação até a liberação do crédito</div>
+
+      <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+        <button class="btn btn-verde" onclick="abrirModal('modal-novo-credito')">+ Nova Operação</button>
+        <div style="flex:1;min-width:150px;background:white;border-radius:8px;padding:10px 16px;border:1px solid var(--cinza-borda);">
+          <span style="font-size:11px;color:#5a7a65;font-weight:700;">EM ANDAMENTO</span>
+          <span style="font-size:18px;font-weight:700;color:var(--verde-escuro);margin-left:10px;">R$ 820.000</span>
+        </div>
+      </div>
+
+      <div class="kanban">
+        <div class="kanban-col">
+          <div class="kanban-col-titulo" style="border-bottom-color:var(--amarelo);">Documentação Solicitada <span class="badge badge-cinza">3</span></div>
+          <div class="kanban-card laranja">
+            <div class="kc-nome">Faz. Boa Vista — João Pedro</div>
+            <div class="kc-info">🏦 BB · Pronamp</div>
+            <div class="kc-valor">R$ 320.000</div>
+          </div>
+          <div class="kanban-card laranja">
+            <div class="kc-nome">Faz. Santa Fé — Ana Lima</div>
+            <div class="kc-info">🏦 SICREDI · Pronaf</div>
+            <div class="kc-valor">R$ 95.000</div>
+          </div>
+          <div class="kanban-card laranja">
+            <div class="kc-nome">Faz. Esperança — Paulo</div>
+            <div class="kc-info">🏦 Caixa · FCO</div>
+            <div class="kc-valor">R$ 180.000</div>
+          </div>
+        </div>
+
+        <div class="kanban-col">
+          <div class="kanban-col-titulo" style="border-bottom-color:var(--azul);">Projeto Elaborado <span class="badge badge-cinza">2</span></div>
+          <div class="kanban-card azul">
+            <div class="kc-nome">Faz. Três Marias — Carlos</div>
+            <div class="kc-info">🏦 BDMG · Pronamp</div>
+            <div class="kc-valor">R$ 120.000</div>
+          </div>
+          <div class="kanban-card azul">
+            <div class="kc-nome">Faz. Nova Era — Silvana</div>
+            <div class="kc-info">🏦 BB · Custeio</div>
+            <div class="kc-valor">R$ 55.000</div>
+          </div>
+        </div>
+
+        <div class="kanban-col">
+          <div class="kanban-col-titulo" style="border-bottom-color:var(--terra);">Protocolado no Banco <span class="badge badge-cinza">2</span></div>
+          <div class="kanban-card" style="border-left-color:var(--terra);">
+            <div class="kc-nome">Faz. Horizonte — Roberto</div>
+            <div class="kc-info">🏦 SICREDI · Pronaf · 10 dias</div>
+            <div class="kc-valor">R$ 60.000</div>
+          </div>
+          <div class="kanban-card" style="border-left-color:var(--terra);">
+            <div class="kc-nome">Faz. Bela Vista — Marcos</div>
+            <div class="kc-info">🏦 BB · FCO · 18 dias</div>
+            <div class="kc-valor">R$ 200.000</div>
+          </div>
+        </div>
+
+        <div class="kanban-col">
+          <div class="kanban-col-titulo" style="border-bottom-color:var(--verde-claro);">✅ Aprovado / Liberado <span class="badge badge-verde">3</span></div>
+          <div class="kanban-card" style="border-left-color:var(--verde-claro);">
+            <div class="kc-nome">Faz. Paraíso — Tereza</div>
+            <div class="kc-info">✅ Liberado em 15/06</div>
+            <div class="kc-valor">R$ 280.000</div>
+          </div>
+          <div class="kanban-card" style="border-left-color:var(--verde-claro);">
+            <div class="kc-nome">Faz. Palmeira — Eduardo</div>
+            <div class="kc-info">✅ Liberado em 08/06</div>
+            <div class="kc-valor">R$ 145.000</div>
+          </div>
+          <div class="kanban-card" style="border-left-color:var(--verde-claro);">
+            <div class="kc-nome">Faz. Planalto — Lucia</div>
+            <div class="kc-info">✅ Liberado em 02/06</div>
+            <div class="kc-valor">R$ 90.000</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== FUNIL: AMBIENTAL & GEO ===== -->
+    <div class="page" id="page-funil-ambiental">
+      <div class="page-titulo">🌿 Funil Ambiental & Georreferenciamento</div>
+      <div class="page-sub">Desde o orçamento aprovado até a aprovação no órgão ambiental</div>
+
+      <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+        <button class="btn btn-verde">+ Novo Projeto</button>
+        <div style="flex:1;min-width:150px;background:white;border-radius:8px;padding:10px 16px;border:1px solid var(--cinza-borda);">
+          <span style="font-size:11px;color:#5a7a65;font-weight:700;">PROJETOS ATIVOS</span>
+          <span style="font-size:18px;font-weight:700;color:var(--verde-escuro);margin-left:10px;">11</span>
+        </div>
+      </div>
+
+      <div class="kanban">
+        <div class="kanban-col">
+          <div class="kanban-col-titulo" style="border-bottom-color:var(--azul);">Orçamento Aprovado <span class="badge badge-cinza">2</span></div>
+          <div class="kanban-card azul">
+            <div class="kc-nome">CAR — Faz. Horizonte</div>
+            <div class="kc-info">Maria Costa · 1.200 ha</div>
+            <div class="kc-valor">R$ 4.800</div>
+          </div>
+          <div class="kanban-card azul">
+            <div class="kc-nome">SIGEF — Faz. Aliança</div>
+            <div class="kc-info">Carlos Mendes · 620 ha</div>
+            <div class="kc-valor">R$ 7.200</div>
+          </div>
+        </div>
+
+        <div class="kanban-col">
+          <div class="kanban-col-titulo" style="border-bottom-color:var(--amarelo);">Vistoria de Campo <span class="badge badge-cinza">3</span></div>
+          <div class="kanban-card laranja">
+            <div class="kc-nome">Geo — Faz. Boa Vista</div>
+            <div class="kc-info">📅 Agendada: 26/06</div>
+            <div class="kc-valor">R$ 6.500</div>
+          </div>
+          <div class="kanban-card laranja">
+            <div class="kc-nome">LO — Faz. Três Corações</div>
+            <div class="kc-info">📅 Agendada: 02/07</div>
+            <div class="kc-valor">R$ 3.200</div>
+          </div>
+          <div class="kanban-card laranja">
+            <div class="kc-nome">CAR+Geo — Faz. Planalto</div>
+            <div class="kc-info">📅 Realizada: 19/06</div>
+            <div class="kc-valor">R$ 9.000</div>
+          </div>
+        </div>
+
+        <div class="kanban-col">
+          <div class="kanban-col-titulo" style="border-bottom-color:var(--terra);">Processamento de Dados <span class="badge badge-cinza">2</span></div>
+          <div class="kanban-card" style="border-left-color:var(--terra);">
+            <div class="kc-nome">SIGEF — Faz. Santa Fé</div>
+            <div class="kc-info">Ana Lima · Prazo: 30/06</div>
+            <div class="kc-valor">R$ 5.400</div>
+          </div>
+          <div class="kanban-card" style="border-left-color:var(--terra);">
+            <div class="kc-nome">Geo+CAR — Faz. Esperança</div>
+            <div class="kc-info">Paulo · Prazo: 05/07</div>
+            <div class="kc-valor">R$ 11.000</div>
+          </div>
+        </div>
+
+        <div class="kanban-col">
+          <div class="kanban-col-titulo" style="border-bottom-color:var(--verde-claro);">Entrega do Projeto <span class="badge badge-cinza">2</span></div>
+          <div class="kanban-card">
+            <div class="kc-nome">CAR — Faz. Nova Era</div>
+            <div class="kc-info">Silvana · Entregue 20/06</div>
+            <div class="kc-valor">R$ 2.800</div>
+          </div>
+          <div class="kanban-card">
+            <div class="kc-nome">Geo — Faz. Palmeira</div>
+            <div class="kc-info">Eduardo · Aguardando revisão</div>
+            <div class="kc-valor">R$ 6.000</div>
+          </div>
+        </div>
+
+        <div class="kanban-col">
+          <div class="kanban-col-titulo" style="border-bottom-color:#52b788;">✅ Aprovado no Órgão <span class="badge badge-verde">2</span></div>
+          <div class="kanban-card" style="border-left-color:var(--verde-claro);">
+            <div class="kc-nome">LO — Faz. Paraíso</div>
+            <div class="kc-info">✅ SEMA · 10/06/2026</div>
+            <div class="kc-valor">R$ 4.200</div>
+          </div>
+          <div class="kanban-card" style="border-left-color:var(--verde-claro);">
+            <div class="kc-nome">CAR — Faz. Bela Vista</div>
+            <div class="kc-info">✅ INCRA · 05/06/2026</div>
+            <div class="kc-valor">R$ 3.600</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ===== MODAL: NOVO CLIENTE ===== -->
+<div class="modal-overlay" id="modal-novo-cliente">
+  <div class="modal">
+    <button class="modal-fechar" onclick="fecharModal('modal-novo-cliente')">✕</button>
+    <div class="modal-titulo">🧑‍🌾 Cadastrar Novo Cliente</div>
+
+    <div class="tabs">
+      <div class="tab ativa" onclick="abrirTab(this,'form-pessoal')">👤 Dados Pessoais</div>
+      <div class="tab" onclick="abrirTab(this,'form-propriedade')">🌾 Propriedade</div>
+      <div class="tab" onclick="abrirTab(this,'form-credito-tab')">💰 Crédito</div>
+      <div class="tab" onclick="abrirTab(this,'form-ambiental-tab')">🌿 Ambiental/Geo</div>
+    </div>
+
+    <div class="tab-content ativa" id="form-pessoal">
+      <div class="form-grid">
+        <div class="form-grupo form-completo"><label>Nome Completo / Razão Social</label><input type="text" placeholder="Ex: João Pedro da Silva"></div>
+        <div class="form-grupo"><label>CPF / CNPJ</label><input type="text" placeholder="000.000.000-00"></div>
+        <div class="form-grupo"><label>Data de Nascimento</label><input type="date"></div>
+        <div class="form-grupo"><label>E-mail</label><input type="email" placeholder="email@exemplo.com"></div>
+        <div class="form-grupo"><label>Telefone</label><input type="tel" placeholder="(00) 00000-0000"></div>
+        <div class="form-grupo"><label>WhatsApp</label><input type="tel" placeholder="(00) 00000-0000"></div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="form-propriedade">
+      <div class="form-grid">
+        <div class="form-grupo"><label>Nome da Fazenda</label><input type="text" placeholder="Ex: Fazenda Boa Vista"></div>
+        <div class="form-grupo"><label>Município</label><input type="text" placeholder="Ex: Rondonópolis"></div>
+        <div class="form-grupo"><label>UF</label>
+          <select><option>MT</option><option>MS</option><option>GO</option><option>PR</option><option>SP</option><option>MG</option><option>BA</option><option>PA</option><option>TO</option><option>MA</option><option>PI</option><option>RO</option><option>AC</option></select>
+        </div>
+        <div class="form-grupo"><label>Área Total (hectares)</label><input type="number" placeholder="Ex: 850"></div>
+        <div class="form-grupo"><label>Cultura Principal</label>
+          <select><option>Soja</option><option>Milho</option><option>Algodão</option><option>Boi / Pastagem</option><option>Cana-de-açúcar</option><option>Café</option><option>Feijão</option><option>Arroz</option><option>Sorgo</option><option>Fruticultura</option><option>Outro</option></select>
+        </div>
+        <div class="form-grupo"><label>Cultura Secundária</label><input type="text" placeholder="Ex: Milho safrinha"></div>
+        <div class="form-grupo"><label>Nº Matrícula do Imóvel</label><input type="text" placeholder="Ex: 1234 · Cartório de Registro"></div>
+        <div class="form-grupo"><label>Nº do CAR</label><input type="text" placeholder="MT-1234567-XXXXX"></div>
+        <div class="form-grupo"><label>Status do CAR</label>
+          <select><option>Não iniciado</option><option>Cadastrado</option><option>Em análise</option><option>Aprovado</option><option>Pendente de regularização</option></select>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="form-credito-tab">
+      <div class="form-grid">
+        <div class="form-grupo"><label>Instituição Financeira</label>
+          <select><option>Banco do Brasil</option><option>SICREDI</option><option>Caixa Econômica</option><option>BDMG</option><option>BRB</option><option>Bradesco</option><option>Itaú</option><option>Santander</option><option>BASA</option><option>BNB</option><option>Outro</option></select>
+        </div>
+        <div class="form-grupo"><label>Linha de Crédito</label>
+          <select><option>Pronaf</option><option>Pronamp</option><option>FCO Rural</option><option>FNE Rural</option><option>FNO Rural</option><option>Custeio Safra</option><option>Investimento</option><option>BNDES</option><option>Inovagro</option><option>Moderagro</option><option>Moderfrota</option><option>Outro</option></select>
+        </div>
+        <div class="form-grupo"><label>Valor Financiado (R$)</label><input type="number" placeholder="Ex: 320000"></div>
+        <div class="form-grupo"><label>Data de Liberação</label><input type="date"></div>
+        <div class="form-grupo"><label>Vencimento da Parcela / Contrato</label><input type="date"></div>
+        <div class="form-grupo"><label>Nº do Contrato</label><input type="text" placeholder="Ex: 2024/12345"></div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="form-ambiental-tab">
+      <div class="form-grid">
+        <div class="form-grupo"><label>Tipo de Serviço</label>
+          <select><option>Georreferenciamento (SIGEF)</option><option>CAR</option><option>CAR + Georreferenciamento</option><option>Licença Ambiental (LP)</option><option>Licença Ambiental (LI)</option><option>Licença Ambiental (LO)</option><option>Regularização Ambiental</option><option>PRAD</option></select>
+        </div>
+        <div class="form-grupo"><label>Status do Projeto</label>
+          <select><option>Orçamento</option><option>Orçamento Aprovado</option><option>Em Execução</option><option>Vistoria de Campo</option><option>Processando Dados</option><option>Protocolado</option><option>Entregue</option><option>Aprovado no Órgão</option></select>
+        </div>
+        <div class="form-grupo"><label>Data da Vistoria a Campo</label><input type="date"></div>
+        <div class="form-grupo"><label>Data de Emissão da Licença</label><input type="date"></div>
+        <div class="form-grupo"><label>Data de Vencimento da Licença</label><input type="date"></div>
+        <div class="form-grupo form-completo"><label>Observações</label><textarea placeholder="Anotações, pendências, histórico..."></textarea></div>
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-verde" onclick="salvarCliente()">✅ Salvar Cliente</button>
+      <button class="btn btn-outline" onclick="fecharModal('modal-novo-cliente')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: NOVO LEAD ===== -->
+<div class="modal-overlay" id="modal-novo-lead">
+  <div class="modal" style="max-width:420px;">
+    <button class="modal-fechar" onclick="fecharModal('modal-novo-lead')">✕</button>
+    <div class="modal-titulo">🎯 Adicionar Lead</div>
+    <div class="form-grid">
+      <div class="form-grupo form-completo"><label>Nome do Produtor</label><input type="text" placeholder="Nome completo"></div>
+      <div class="form-grupo"><label>Telefone / WhatsApp</label><input type="tel" placeholder="(00) 00000-0000"></div>
+      <div class="form-grupo"><label>Município/UF</label><input type="text" placeholder="Ex: Sorriso-MT"></div>
+      <div class="form-grupo"><label>Origem do Lead</label>
+        <select><option>Indicação</option><option>Redes sociais</option><option>Site</option><option>Evento</option><option>Prospecção ativa</option></select>
+      </div>
+      <div class="form-grupo"><label>Interesse Principal</label>
+        <select><option>Crédito Rural</option><option>Georreferenciamento</option><option>CAR</option><option>Licença Ambiental</option><option>Pacote Completo</option></select>
+      </div>
+      <div class="form-grupo"><label>Área Estimada (ha)</label><input type="number" placeholder="Ex: 500"></div>
+      <div class="form-grupo form-completo"><label>Observação</label><textarea placeholder="Como chegou até nós? Alguma necessidade específica?"></textarea></div>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-verde" onclick="fecharModal('modal-novo-lead');alert('Lead adicionado ao funil! ✅')">✅ Adicionar ao Funil</button>
+      <button class="btn btn-outline" onclick="fecharModal('modal-novo-lead')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: NOVA OPERAÇÃO CRÉDITO ===== -->
+<div class="modal-overlay" id="modal-novo-credito">
+  <div class="modal" style="max-width:480px;">
+    <button class="modal-fechar" onclick="fecharModal('modal-novo-credito')">✕</button>
+    <div class="modal-titulo">💰 Nova Operação de Crédito</div>
+    <div class="form-grid">
+      <div class="form-grupo form-completo"><label>Produtor</label>
+        <select><option>João Pedro Silva</option><option>Maria Aparecida Costa</option><option>Carlos Eduardo Mendes</option><option>Ana Lima Ferreira</option><option>Roberto Faria Nunes</option></select>
+      </div>
+      <div class="form-grupo"><label>Instituição Financeira</label><select><option>Banco do Brasil</option><option>SICREDI</option><option>Caixa</option><option>BDMG</option><option>BRB</option></select></div>
+      <div class="form-grupo"><label>Linha de Crédito</label><select><option>Pronaf</option><option>Pronamp</option><option>FCO Rural</option><option>Custeio</option><option>Investimento</option></select></div>
+      <div class="form-grupo"><label>Valor Solicitado (R$)</label><input type="number" placeholder="0,00"></div>
+      <div class="form-grupo"><label>Data de Entrada</label><input type="date"></div>
+      <div class="form-grupo"><label>Previsão de Liberação</label><input type="date"></div>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-verde" onclick="fecharModal('modal-novo-credito');alert('Operação adicionada ao funil! ✅')">✅ Criar Operação</button>
+      <button class="btn btn-outline" onclick="fecharModal('modal-novo-credito')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: PERFIL DO CLIENTE ===== -->
+<div class="modal-overlay" id="modal-perfil">
+  <div class="modal">
+    <button class="modal-fechar" onclick="fecharModal('modal-perfil')">✕</button>
+    <div id="perfil-conteudo"></div>
+  </div>
+</div>
+
+<script>
+// ===== NAVEGAÇÃO =====
+function irPara(pagina) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('ativa'));
+  document.querySelectorAll('nav a').forEach(a => a.classList.remove('ativo'));
+  document.getElementById('page-' + pagina).classList.add('ativa');
+  const nav = document.getElementById('nav-' + pagina);
+  if (nav) nav.classList.add('ativo');
+}
+
+// ===== TABS =====
+function abrirTab(el, tabId) {
+  const parent = el.closest('.secao, .modal, .page');
+  parent.querySelectorAll('.tab').forEach(t => t.classList.remove('ativa'));
+  parent.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('ativa'));
+  el.classList.add('ativa');
+  const tc = document.getElementById(tabId);
+  if (tc) tc.classList.add('ativa');
+}
+
+// ===== MODAIS =====
+function abrirModal(id) {
+  document.getElementById(id).classList.add('aberto');
+}
+function fecharModal(id) {
+  document.getElementById(id).classList.remove('aberto');
+}
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('aberto');
+  });
+});
+
+// ===== FILTRO CLIENTES =====
+function filtrarClientes(termo) {
+  const rows = document.querySelectorAll('#tbody-clientes tr');
+  rows.forEach(row => {
+    row.style.display = row.textContent.toLowerCase().includes(termo.toLowerCase()) ? '' : 'none';
+  });
+}
+
+// ===== PERFIS DEMO =====
+const clientes = [
+  {
+    nome: 'João Pedro Silva', cpf: '123.456.789-00', nasc: '23/06/1975',
+    email: 'joaopedro@email.com', tel: '(65) 99999-0001', whats: '(65) 99999-0001',
+    fazenda: 'Fazenda Boa Vista', municipio: 'Rondonópolis-MT', area: '850 ha',
+    cultura: 'Soja / Milho', car: 'Aprovado', matricula: '1.234',
+    banco: 'Banco do Brasil', linha: 'Pronamp', valor: 'R$ 320.000',
+    venc: '17/09/2026', ticket: 'R$ 95.000',
+    status_geo: 'Entregue', obs: 'Cliente fidelizado. Potencial para renovação em setembro.'
+  },
+  {
+    nome: 'Maria Aparecida Costa', cpf: '987.654.321-00', nasc: '15/03/1968',
+    email: 'maria.costa@email.com', tel: '(66) 98888-2233', whats: '(66) 98888-2233',
+    fazenda: 'Fazenda Três Corações', municipio: 'Nova Mutum-MT', area: '1.200 ha',
+    cultura: 'Soja / Milho', car: 'Em análise', matricula: '5.678',
+    banco: 'SICREDI', linha: 'Pronamp', valor: 'R$ 450.000',
+    venc: '30/03/2027', ticket: 'R$ 120.000',
+    status_geo: 'Vistoria de Campo', obs: 'CAR em análise desde maio. LO vence em novembro.'
+  },
+  {
+    nome: 'Carlos Eduardo Mendes', cpf: '12.345.678/0001-99', nasc: '27/06/1982',
+    email: 'carlos.mendes@fazenda.com', tel: '(66) 99888-1122', whats: '(66) 99888-1122',
+    fazenda: 'Fazenda Aliança', municipio: 'Juína-MT', area: '620 ha',
+    cultura: 'Boi / Pastagem', car: 'Aprovado', matricula: '9.012',
+    banco: '—', linha: '—', valor: '—',
+    venc: '—', ticket: 'R$ 28.000',
+    status_geo: 'Orçamento Aprovado', obs: 'Sem crédito ativo. Oportunidade de prospecção FCO.'
+  }
+];
+
+function abrirPerfil(idx) {
+  const c = clientes[idx];
+  document.getElementById('perfil-conteudo').innerHTML = `
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:18px;">
+      <div style="width:56px;height:56px;border-radius:50%;background:var(--verde-suave);display:flex;align-items:center;justify-content:center;font-size:26px;">🧑‍🌾</div>
+      <div>
+        <div style="font-size:20px;font-weight:700;color:var(--verde-escuro);">${c.nome}</div>
+        <div style="font-size:12px;color:#6b7c6a;">${c.cpf} · ${c.fazenda} · ${c.municipio}</div>
+      </div>
+      <div style="margin-left:auto;text-align:right;">
+        <div style="font-size:11px;color:#5a7a65;font-weight:700;">TICKET</div>
+        <div style="font-size:22px;font-weight:700;color:var(--verde-escuro);">${c.ticket}</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+      <div class="secao" style="margin:0;padding:14px;">
+        <div class="secao-titulo" style="margin-bottom:10px;">👤 Dados Pessoais</div>
+        <div style="display:flex;flex-direction:column;gap:6px;font-size:13px;">
+          <div>🎂 <strong>${c.nasc}</strong></div>
+          <div>📧 ${c.email}</div>
+          <div>📞 ${c.tel}</div>
+          <div>💬 WhatsApp: ${c.whats}</div>
+        </div>
+      </div>
+      <div class="secao" style="margin:0;padding:14px;">
+        <div class="secao-titulo" style="margin-bottom:10px;">🌾 Propriedade</div>
+        <div style="display:flex;flex-direction:column;gap:6px;font-size:13px;">
+          <div>📍 ${c.municipio}</div>
+          <div>📐 ${c.area}</div>
+          <div>🌱 ${c.cultura}</div>
+          <div>📋 Matrícula: ${c.matricula}</div>
+          <div>🌿 CAR: <span class="badge ${c.car==='Aprovado'?'badge-verde':c.car==='Em análise'?'badge-amarelo':'badge-cinza'}">${c.car}</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+      <div class="secao" style="margin:0;padding:14px;">
+        <div class="secao-titulo" style="margin-bottom:10px;">💰 Crédito Rural</div>
+        <div style="display:flex;flex-direction:column;gap:6px;font-size:13px;">
+          <div>🏦 ${c.banco}</div>
+          <div>📄 ${c.linha}</div>
+          <div>💵 ${c.valor}</div>
+          <div>⏰ Vencimento: <strong>${c.venc}</strong></div>
+        </div>
+      </div>
+      <div class="secao" style="margin:0;padding:14px;">
+        <div class="secao-titulo" style="margin-bottom:10px;">🌿 Ambiental & Geo</div>
+        <div style="display:flex;flex-direction:column;gap:6px;font-size:13px;">
+          <div>Status: <span class="badge badge-azul">${c.status_geo}</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="secao" style="margin:0;padding:14px;">
+      <div class="secao-titulo" style="margin-bottom:8px;">📝 Observações</div>
+      <p style="font-size:13px;color:#555;">${c.obs}</p>
+    </div>
+
+    <div class="btn-group" style="margin-top:14px;">
+      <button class="btn btn-verde btn-sm">✏️ Editar</button>
+      <button class="btn btn-outline btn-sm">💬 WhatsApp</button>
+      <button class="btn btn-outline btn-sm">💰 Nova Proposta</button>
+      <button class="btn btn-outline btn-sm">📋 Histórico</button>
+    </div>
+  `;
+  abrirModal('modal-perfil');
+}
+
+// ===== SALVAR CLIENTE =====
+function salvarCliente() {
+  fecharModal('modal-novo-cliente');
+  alert('✅ Cliente salvo com sucesso!\nO sistema já configurou os alertas automáticos de aniversário, crédito e licença.');
+}
+
+// ===== IMPORTAR ARQUIVO =====
+function processarArquivo(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const preview = document.getElementById('preview-import');
+  const conteudo = document.getElementById('preview-conteudo');
+
+  const ext = file.name.split('.').pop().toLowerCase();
+  preview.style.display = 'block';
+
+  if (ext === 'csv') {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const linhas = e.target.result.split('\n').filter(l => l.trim());
+      const headers = linhas[0].split(/[,;]/).map(h => h.trim().replace(/"/g,''));
+      const dados = linhas.slice(1, 6).map(l => l.split(/[,;]/).map(c => c.trim().replace(/"/g,'')));
+
+      let html = `<p style="margin-bottom:10px;color:var(--verde-medio);font-weight:600;">✅ ${linhas.length - 1} clientes encontrados em "${file.name}"</p>`;
+      html += '<div class="tabela-wrap"><table><thead><tr>' + headers.map(h => `<th>${h}</th>`).join('') + '</tr></thead><tbody>';
+      dados.forEach(row => { html += '<tr>' + row.map(c => `<td>${c}</td>`).join('') + '</tr>'; });
+      html += '</tbody></table></div>';
+      if (linhas.length > 6) html += `<p style="margin-top:8px;font-size:12px;color:#9aab95;">... e mais ${linhas.length - 6} registros</p>`;
+      conteudo.innerHTML = html;
+    };
+    reader.readAsText(file, 'UTF-8');
+  } else {
+    conteudo.innerHTML = `
+      <div style="background:var(--verde-suave);border-radius:8px;padding:16px;">
+        <strong style="color:var(--verde-escuro);">📂 Arquivo recebido: ${file.name}</strong>
+        <p style="margin-top:6px;font-size:13px;color:#5a7a65;">Arquivo Excel detectado. Em produção, use uma biblioteca como SheetJS para leitura completa. O sistema extrai automaticamente todos os campos disponíveis e marca os campos manuais para completar depois.</p>
+      </div>`;
+  }
+}
+
+// ===== BAIXAR MODELO CSV =====
+function baixarModelo() {
+  const headers = ['nome','cpf_cnpj','data_nasc','email','telefone','fazenda','municipio','uf','hectares','cultura','matricula','status_car','num_car','banco','linha_credito','valor_credito','venc_credito','status_geo','data_vistoria','data_licenca','venc_licenca','obs'];
+  const exemplo = ['João Pedro Silva','123.456.789-00','23/06/1975','joao@email.com','(65) 99999-0001','Fazenda Boa Vista','Rondonópolis','MT','850','Soja','1.234','Aprovado','MT-1234567-XXXXX','Banco do Brasil','Pronamp','320000','17/09/2026','Entregue','10/03/2026','20/05/2024','20/05/2029','Observações aqui'];
+  const csv = headers.join(';') + '\n' + exemplo.join(';');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'modelo_importacao_crm_agro.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+</script>
+</body>
+</html>
